@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section">
+<div class="container">
+<img src="{{ project.image.url }}" alt="{{ project.title }}" class="banner" />
+<h1>{{ project.title }}</h1>
+{% if project.category %}<p class="muted">{{ project.category.name }}</p>{% endif %}
+<p>{{ project.description|linebreaks }}</p>
+<div class="actions">
+{% if project.github_url %}<a class="btn" href="{{ project.github_url }}" target="_blank">Source</a>{% endif %}
+{% if project.live_url %}<a class="btn" href="{{ project.live_url }}" target="_blank">Live</a>{% endif %}
+</div>
+</div>
+</section>
+{% endblock %}

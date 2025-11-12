@@ -1,0 +1,13 @@
+<header class="site-header">
+<div class="container">
+<a href="/" class="logo">
+{% if settings.logo %}<img src="{{ settings.logo.url }}" alt="{{ settings.site_name }}" />{% else %}{{ settings.site_name }}{% endif %}
+</a>
+<nav>
+<a href="#services">Services</a>
+<a href="#portfolio">Portfolio</a>
+<a href="#about">About</a>
+<a href="#contact">Contact</a>
+</nav>
+</div>
+</header>

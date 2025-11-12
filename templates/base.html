@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ settings.site_name }}</title>
+
+  <!-- Preload + stylesheet -->
+  <link rel="preload" href="{% static 'css/style.css' %}" as="style">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+
+  <!-- Optional: color for mobile address bar -->
+  <meta name="theme-color" content="#0b0720">
+</head>
+<body>
+  {% include 'includes/header.html' %}
+
+  <main id="content">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include 'includes/footer.html' %}
+
+  <!-- Defer JS so render is not blocked. network.js should be first so visual layer exists. -->
+  <script src="{% static 'js/network.js' %}" defer></script>
+  <script src="{% static 'js/main.js' %}" defer></script>
+  <script src="{% static 'js/cards.js' %}" defer></script>
+</body>
+</html>

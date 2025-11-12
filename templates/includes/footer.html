@@ -1,0 +1,8 @@
+<footer class="site-footer">
+<div class="container">
+<p>© {{ settings.site_name }} — {{ now|date:'Y' }}</p>
+<div class="socials">
+{% for s in socials %}<a href="{{ s.url }}" class="icon {{ s.icon_class }}" aria-label="{{ s.name }}"></a>{% endfor %}
+</div>
+</div>
+</footer>
