@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 {% load static %}
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,6 +14,7 @@
   <!-- Optional: color for mobile address bar -->
   <meta name="theme-color" content="#0b0720">
 </head>
+
 <body>
   {% include 'includes/header.html' %}
 
@@ -21,10 +23,12 @@
   </main>
 
   {% include 'includes/footer.html' %}
+  {% include 'includes/messages.html' %}
 
   <!-- Defer JS so render is not blocked. network.js should be first so visual layer exists. -->
   <script src="{% static 'js/network.js' %}" defer></script>
   <script src="{% static 'js/main.js' %}" defer></script>
   <script src="{% static 'js/cards.js' %}" defer></script>
 </body>
+
 </html>

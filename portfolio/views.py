@@ -45,7 +45,7 @@ def home(request):
                 email.attach_alternative(html_body, "text/html")
                 sent = email.send(fail_silently=False)  # will raise on error
                 logger.info("Contact email sent (count=%s) for ContactMessage id=%s", sent, contact_obj.pk)
-                messages.success(request, "Thanks! I'll get back to you soon.")
+                messages.success(request, "Transmission Received. Handshake Protocol Initiated... We will be in touch.")
             except Exception as exc:
                 # Full stack trace in logs
                 logger.exception("Failed to send contact email for id=%s: %s", contact_obj.pk, exc)
@@ -53,7 +53,7 @@ def home(request):
                 messages.error(request, "Your message was saved but we couldn't send email notifications. We'll look into it.")
 
             # PRG pattern
-            return redirect("home")
+            return redirect("/#contact")
     else:
         form = ContactForm()
 

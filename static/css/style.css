@@ -597,8 +597,8 @@ nav a {
 
 .card:hover .icon {
   transform:
-    translate3d(calc(var(--px, 0) * 14px), calc(var(--py, 0) * 14px), 0) scale(1.06);
-  filter: drop-shadow(0 6px 16px hsl(var(--hue) var(--sat) 65% / .35));
+    translate3d(calc(var(--px, 0) * 24px), calc(var(--py, 0) * 24px), 20px) scale(1.1);
+  filter: drop-shadow(0 8px 20px hsl(var(--hue) var(--sat) 65% / .5));
 }
 
 .card h3 {
@@ -806,8 +806,88 @@ nav a {
   opacity: 0.7;
 }
 
-.scramble-line {
-  display: inline-block;
-  cursor: crosshair;
-  transition: color 0.2s;
+/* Message Notifications (Modal Style) */
+.messages {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  pointer-events: auto;
+  opacity: 0;
+  animation: fadeIn 0.3s forwards;
+}
+
+.messages li {
+  background: #0b0720;
+  border: 1px solid var(--accent);
+  color: #fff;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  border-radius: 12px;
+  font-family: 'Courier New', monospace;
+  box-shadow: 0 0 40px rgba(5, 176, 255, 0.25);
+  animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: center;
+  position: relative;
+}
+
+.messages li::before {
+  content: 'SYSTEM NOTIFICATION';
+  font-size: 0.8rem;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.messages li::after {
+  content: 'Click anywhere to close';
+  font-size: 0.75rem;
+  opacity: 0.5;
+  margin-top: 1rem;
+  font-family: var(--font-sans);
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Spotlight Effect */
+.card::before {
+  background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y),
+      rgba(255, 255, 255, 0.1),
+      transparent 40%);
+  z-index: 3;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.card:hover::before {
+  opacity: 1;
 }

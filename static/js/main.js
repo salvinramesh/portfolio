@@ -16,6 +16,61 @@
     log('DOMContentLoaded - initializing parallax', { prefersReduced });
 
     // HERO PARALLAX
+    // HACKER SCRAMBLE EFFECT
+    class TextScramble {
+      constructor(el) {
+        this.el = el;
+        this.chars = '!<>-_\\/[]{}—=+*^?#________';
+        this.update = this.update.bind(this);
+      }
+      setText(newText) {
+        const oldText = this.el.innerText;
+        const length = Math.max(oldText.length, newText.length);
+        const promise = new Promise((resolve) => this.resolve = resolve);
+        this.queue = [];
+        for (let i = 0; i < length; i++) {
+          const from = oldText[i] || '';
+          const to = newText[i] || '';
+          const start = Math.floor(Math.random() * 40);
+          const end = start + Math.floor(Math.random() * 40);
+          this.queue.push({ from, to, start, end });
+        }
+        cancelAnimationFrame(this.frameRequest);
+        this.frame = 0;
+        this.update();
+        return promise;
+      }
+      update() {
+        let output = '';
+        let complete = 0;
+        for (let i = 0, n = this.queue.length; i < n; i++) {
+          let { from, to, start, end, char } = this.queue[i];
+          if (this.frame >= end) {
+            complete++;
+            output += to;
+          } else if (this.frame >= start) {
+            if (!char || Math.random() < 0.28) {
+              char = this.randomChar();
+              this.queue[i].char = char;
+            }
+            output += `<span class="dud">${char}</span>`;
+          } else {
+            output += from;
+          }
+        }
+        this.el.innerHTML = output;
+        if (complete === this.queue.length) {
+          this.resolve();
+        } else {
+          this.frameRequest = requestAnimationFrame(this.update);
+          this.frame++;
+        }
+      }
+      randomChar() {
+        return this.chars[Math.floor(Math.random() * this.chars.length)];
+      }
+    }
+
     const hero = document.querySelector('.hero');
     if (hero && !prefersReduced) {
       log('found hero element — enabling hero parallax');
@@ -112,23 +167,49 @@
         let rect = card.getBoundingClientRect();
         let raf = null;
 
-        const setVars = (px, py) => {
+        const setVars = (px, py, x, y) => {
           card.style.setProperty('--px', px.toFixed(3));
           card.style.setProperty('--py', py.toFixed(3));
+          card.style.setProperty('--mouse-x', `${x}px`);
+          card.style.setProperty('--mouse-y', `${y}px`);
         };
 
         const onMove = (e) => {
           const clientX = (e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
           const clientY = (e.touches && e.touches[0]) ? e.touches[0].clientY : e.clientY;
-          const px = clamp((clientX - rect.left) / rect.width - 0.5, -0.5, 0.5);
-          const py = clamp((clientY - rect.top) / rect.height - 0.5, -0.5, 0.5);
+          const x = clientX - rect.left;
+          const y = clientY - rect.top;
+          const px = clamp(x / rect.width - 0.5, -0.5, 0.5);
+          const py = clamp(y / rect.height - 0.5, -0.5, 0.5);
 
           if (raf) cancelAnimationFrame(raf);
-          raf = requestAnimationFrame(() => setVars(px, py));
+          raf = requestAnimationFrame(() => setVars(px, py, x, y));
         };
 
-        const onEnter = () => { rect = card.getBoundingClientRect(); };
-        const onLeave = () => { if (raf) cancelAnimationFrame(raf); setVars(0, 0); };
+        const title = card.querySelector('h3');
+        let fx = null;
+        let originalTitle = '';
+        if (title) {
+          originalTitle = title.innerText;
+          fx = new TextScramble(title);
+        }
+
+        const onEnter = () => {
+          rect = card.getBoundingClientRect();
+          if (fx) {
+            fx.setText(originalTitle);
+            title.style.color = 'var(--accent)';
+            title.style.textShadow = '0 0 8px var(--accent)';
+          }
+        };
+        const onLeave = () => {
+          if (raf) cancelAnimationFrame(raf);
+          setVars(0, 0, -1000, -1000);
+          if (title) {
+            title.style.color = '';
+            title.style.textShadow = '';
+          }
+        };
 
         card.addEventListener('mouseenter', onEnter, { passive: true });
         card.addEventListener('mousemove', onMove, { passive: true });
@@ -143,60 +224,7 @@
       cards.forEach(c => { c.style.setProperty('--px', '0'); c.style.setProperty('--py', '0'); });
     }
 
-    // HACKER SCRAMBLE EFFECT
-    class TextScramble {
-      constructor(el) {
-        this.el = el;
-        this.chars = '!<>-_\\/[]{}—=+*^?#________';
-        this.update = this.update.bind(this);
-      }
-      setText(newText) {
-        const oldText = this.el.innerText;
-        const length = Math.max(oldText.length, newText.length);
-        const promise = new Promise((resolve) => this.resolve = resolve);
-        this.queue = [];
-        for (let i = 0; i < length; i++) {
-          const from = oldText[i] || '';
-          const to = newText[i] || '';
-          const start = Math.floor(Math.random() * 40);
-          const end = start + Math.floor(Math.random() * 40);
-          this.queue.push({ from, to, start, end });
-        }
-        cancelAnimationFrame(this.frameRequest);
-        this.frame = 0;
-        this.update();
-        return promise;
-      }
-      update() {
-        let output = '';
-        let complete = 0;
-        for (let i = 0, n = this.queue.length; i < n; i++) {
-          let { from, to, start, end, char } = this.queue[i];
-          if (this.frame >= end) {
-            complete++;
-            output += to;
-          } else if (this.frame >= start) {
-            if (!char || Math.random() < 0.28) {
-              char = this.randomChar();
-              this.queue[i].char = char;
-            }
-            output += `<span class="dud">${char}</span>`;
-          } else {
-            output += from;
-          }
-        }
-        this.el.innerHTML = output;
-        if (complete === this.queue.length) {
-          this.resolve();
-        } else {
-          this.frameRequest = requestAnimationFrame(this.update);
-          this.frame++;
-        }
-      }
-      randomChar() {
-        return this.chars[Math.floor(Math.random() * this.chars.length)];
-      }
-    }
+
 
     // Apply to About section headers or specific text
     // For the main body text, scrambling the whole block is too much.
@@ -273,6 +301,24 @@
         });
       });
     }
+
+    // Modal dismissal logic
+    const allMessages = document.querySelectorAll('.messages');
+    allMessages.forEach(messagesContainer => {
+      // Close on click anywhere
+      messagesContainer.addEventListener('click', () => {
+        messagesContainer.style.opacity = '0';
+        setTimeout(() => messagesContainer.remove(), 300);
+      });
+
+      // Auto-dismiss after 6s
+      setTimeout(() => {
+        if (document.body.contains(messagesContainer)) {
+          messagesContainer.style.opacity = '0';
+          setTimeout(() => messagesContainer.remove(), 300);
+        }
+      }, 6000);
+    });
 
     console.log('main.js loaded — parallax & scramble initialized');
   }; // init
