@@ -1,8 +1,13 @@
 <header class="site-header">
     <div class="container">
         <a href="/" class="logo">
-            {% if settings.logo %}<img src="{{ settings.logo.url }}" alt="{{ settings.site_name }}" />{% else %}{{
-            settings.site_name }}{% endif %}
+            {% if settings.navbar_logo %}
+            <img src="{{ settings.navbar_logo.url }}" alt="{{ settings.site_name }}" />
+            {% elif settings.logo %}
+            <img src="{{ settings.logo.url }}" alt="{{ settings.site_name }}" />
+            {% else %}
+            {{ settings.site_name }}
+            {% endif %}
         </a>
         <nav>
             <a href="#services">Services</a>

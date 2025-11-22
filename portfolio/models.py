@@ -11,6 +11,7 @@ class TimeStamped(models.Model):
 class SiteSettings(TimeStamped):
     site_name = models.CharField(max_length=120, default="IT Engineer Portfolio")
     logo = models.ImageField(upload_to="branding/", blank=True, null=True)
+    navbar_logo = models.ImageField(upload_to="branding/", blank=True, null=True, help_text="Separate logo for the navigation bar")
 
     # HERO (dynamic)
     hero_kicker = models.CharField(max_length=80, blank=True, help_text="Small label above the title, e.g., 'DevOps • Cloud • Networking'")
