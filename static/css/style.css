@@ -22,15 +22,12 @@ nav a{color:var(--fg);opacity:.85;margin:0 .6rem;text-decoration:none}
   background:linear-gradient(135deg,#0b0720,#1b0f56); /* fallback when no image */
   background-size:cover;
   background-repeat:no-repeat;
-  /* X center, Y controlled by var for scroll parallax */
   background-position: center var(--bg-offset, 0px);
   background-attachment:scroll;
   z-index:1;
 
-  /* perspective for tilt */
   perspective: 1000px;
   transform-style: preserve-3d;
-  /* hint to GPU for smoother transforms */
   will-change: transform, background-position;
 }
 .hero::after{
@@ -48,8 +45,7 @@ nav a{color:var(--fg);opacity:.85;margin:0 .6rem;text-decoration:none}
   will-change: transform;
 }
 
-/* parallax targets use data-depth + --px/--py set from JS
-   depth multiplier tuned to subtle but noticeable movement */
+/* parallax targets use data-depth + --px/--py set from JS */
 .hero [data-depth]{
   transform: translate3d(
     calc(var(--px, 0) * var(--depth, 1) * 10px),
@@ -84,11 +80,9 @@ nav a{color:var(--fg);opacity:.85;margin:0 .6rem;text-decoration:none}
 /* moving glare following cursor */
 .hero-glare{
   position:absolute; inset:0; pointer-events:none; z-index:0;
-  /* default center-ish; JS writes --gx/--gy in px */
   background: radial-gradient(240px 160px at 50% 50%,
     rgba(255,255,255,.22), rgba(255,255,255,.05) 40%, transparent 70%);
   background-repeat: no-repeat;
-  /* background-position controlled by JS via CSS vars */
   background-position: var(--gx, -200px) var(--gy, -200px);
   mix-blend-mode: screen;
   transition: background-position .06s linear;
@@ -101,7 +95,7 @@ nav a{color:var(--fg);opacity:.85;margin:0 .6rem;text-decoration:none}
   grid-template-columns: minmax(0,1.1fr) minmax(0,.9fr);
   align-items:center;
   gap:2rem;
-  position:relative; z-index:1; /* above blobs/glare */
+  position:relative; z-index:1; /* above blobs/glare and canvas */
 }
 .kicker{display:inline-block;margin-bottom:.6rem;color:var(--accent);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem}
 .hero-title{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
@@ -117,8 +111,6 @@ nav a{color:var(--fg);opacity:.85;margin:0 .6rem;text-decoration:none}
   .hero-wrap{grid-template-columns:1fr}
   .hero-visual{display:none}
 }
-
-/* ===== Network flow canvas (interactive) ===== */
 
 /* ===== Network flow canvas (interactive) ===== */
 .network-canvas{
@@ -140,9 +132,10 @@ nav a{color:var(--fg);opacity:.85;margin:0 .6rem;text-decoration:none}
 
 /* for reduced-motion users make it subtle */
 @media (prefers-reduced-motion: reduce) {
-  .network-canvas { opacity: 0.45; filter: blur(1px) contrast(0.95); }
+  .network-canvas { opacity: 0.45; filter: blur(1px) contrast(0.95); display:block }
+  .hero-tilt{ transform:none !important }
+  .hero [data-depth]{ transform:none !important }
 }
-
 
 /* Buttons */
 .btn{display:inline-block;border:1px solid var(--accent);padding:.7rem 1.2rem;border-radius:10px;color:var(--fg);text-decoration:none;transition:.2s ease; backdrop-filter:saturate(1.2)}
@@ -420,7 +413,7 @@ nav a{color:var(--fg);opacity:.85;margin:0 .6rem;text-decoration:none}
 .contact-card textarea{
   min-height:180px;
   resize:vertical;
-  padding-right:44px; /* space for Grammarly/Assist icons */
+  padding-right:44px;
 }
 
 /* Focus & hover */

@@ -9,7 +9,8 @@
   aria-label="Intro"
 >
   <!-- network flow canvas (interactive) - sits above background and behind hero content -->
-  <canvas class="network-canvas" aria-hidden="true"></canvas>
+  <!-- use both id and class to keep selectors explicit and stable -->
+  <canvas id="network-canvas" class="network-canvas" aria-hidden="true" tabindex="-1"></canvas>
 
   <!-- Parallax ambient blobs (decor layers) -->
   <span class="hero-layer blob blob-a" data-depth="8" aria-hidden="true"></span>
@@ -104,4 +105,10 @@
     </div>
   </div>
 </section>
+
+{# Include network assets in your base template (recommended) or add below:
+   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+   <script src="{% static 'js/network.js' %}" defer></script>
+#}
+
 {% endblock %}
