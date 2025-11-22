@@ -1,0 +1,11 @@
+<!doctype html>
+<html>
+  <body>
+    <h2>New contact message</h2>
+    <p><strong>Name:</strong> {{ msg.name }}</p>
+    <p><strong>Email:</strong> {{ msg.email }}</p>
+    <p><strong>Subject:</strong> {{ msg.subject }}</p>
+    <hr/>
+    <p>{{ msg.message|linebreaks }}</p>
+  </body>
+</html>
