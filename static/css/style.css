@@ -35,17 +35,36 @@ img {
 }
 
 .site-header {
-  position: sticky;
-  top: 0;
-  background: #0b0720aa;
-  backdrop-filter: saturate(1.5) blur(6px);
-  z-index: 50
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 1000px;
+  background: rgba(11, 7, 32, 0.65);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  z-index: 1000;
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.site-header:hover {
+  background: rgba(11, 7, 32, 0.8);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 40px 0 rgba(5, 176, 255, 0.15);
 }
 
 .site-header .container {
   display: flex;
   align-items: center;
-  justify-content: space-between
+  justify-content: space-between;
+  padding: 0 1rem;
+  /* Override default container padding */
+  width: 100%;
 }
 
 nav a {
@@ -905,10 +924,16 @@ nav a {
 
 /* Mobile Header Fix */
 @media (max-width: 768px) {
+  .site-header {
+    width: 95%;
+    top: 10px;
+    border-radius: 24px;
+  }
+
   .site-header .container {
     flex-direction: column;
-    gap: 1rem;
-    padding: 1rem;
+    gap: 0.8rem;
+    padding: 0.8rem;
   }
 
   .site-header nav {
