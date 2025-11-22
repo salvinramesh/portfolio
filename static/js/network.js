@@ -8,21 +8,21 @@
   // ---------------- CONFIG ----------------
   const CONFIG = {
     forceAnimate: false,        // set true to ignore prefers-reduced-motion
-    desktopNodes: 120,
-    mobileNodes: 26,
-    connectDist: 140,           // threshold in px to draw a line (raised to help visibility)
-    nodeRadiusMin: 1.6,
-    nodeRadiusMax: 6.0,
+    desktopNodes: 130,          // increased count
+    mobileNodes: 40,            // increased count
+    connectDist: 160,           // threshold in px to draw a line (raised to help visibility)
+    nodeRadiusMin: 2.5,         // larger nodes
+    nodeRadiusMax: 7.0,         // larger nodes
     maxVelocity: 1.2,
     hoverRepel: 0.36,
     hoverRadius: 120,
     fps: 60,
     sampleDownscale: 0.18,      // offscreen sampling scale (0.1..0.4)
     fallbackLineBase: [220, 230, 245], // light fallback RGB
-    fallbackLineAlphaBase: 0.22, // base alpha for fallback before distance multiplier
+    fallbackLineAlphaBase: 0.45, // INCREASED base alpha
     fallbackNodeCore: 'rgba(20,20,20,0.98)',
     fallbackNodeHalo: 'rgba(50,50,50,0.08)',
-    minLineAlpha: 0.06,         // guarantee this minimum alpha for a visible line
+    minLineAlpha: 0.15,         // INCREASED minimum alpha
     sampledAlphaFloor: 0.05     // treat sampled alpha below this as absent
   };
   // ----------------------------------------

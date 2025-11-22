@@ -320,6 +320,93 @@
       }, 6000);
     });
 
+    // Disintegration / Thanos Snap Effect
+    class DisintegrationEffect {
+      constructor(triggerSelector, targetSelector) {
+        this.trigger = document.querySelector(triggerSelector);
+        this.target = document.querySelector(targetSelector);
+        this.isSnapping = false;
+
+        if (this.trigger && this.target) {
+          console.log('DisintegrationEffect initialized on', this.trigger);
+          this.trigger.style.cursor = 'pointer';
+          this.trigger.style.position = 'relative'; // Ensure z-index works
+          this.trigger.style.zIndex = '1000'; // Force on top
+          this.trigger.addEventListener('click', (e) => {
+            console.log('Hero title clicked!');
+            this.snap();
+          });
+        } else {
+          console.warn('DisintegrationEffect: Trigger or Target not found', triggerSelector, targetSelector);
+        }
+      }
+
+      snap() {
+        if (this.isSnapping) return;
+        this.isSnapping = true;
+
+        // Create particles
+        const rect = this.target.getBoundingClientRect();
+        const particleCount = 150; // Number of dust motes
+
+        for (let i = 0; i < particleCount; i++) {
+          const p = document.createElement('div');
+          p.classList.add('dust-particle');
+
+          // Random position within the element
+          const x = Math.random() * rect.width;
+          const y = Math.random() * rect.height;
+
+          p.style.left = (rect.left + x) + 'px';
+          p.style.top = (rect.top + y + window.scrollY) + 'px';
+
+          // Random color variant
+          p.style.background = Math.random() > 0.5 ? 'var(--accent)' : '#fff';
+          p.style.width = Math.random() * 4 + 2 + 'px';
+          p.style.height = p.style.width;
+
+          document.body.appendChild(p);
+
+          // Animate
+          requestAnimationFrame(() => {
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = Math.random() * 100 + 50;
+            const tx = Math.cos(angle) * velocity;
+            const ty = Math.sin(angle) * velocity - 50; // Drift up
+            const rot = Math.random() * 360;
+
+            p.style.transform = `translate(${tx}px, ${ty}px) rotate(${rot}deg)`;
+            p.style.opacity = '0';
+          });
+
+          // Cleanup
+          setTimeout(() => p.remove(), 1000);
+        }
+
+        // Fade out target
+        this.target.style.transition = 'opacity 1s ease, filter 1s ease';
+        this.target.style.opacity = '0';
+        this.target.style.filter = 'blur(10px)';
+
+        // Restore after delay
+        setTimeout(() => {
+          this.target.style.opacity = '1';
+          this.target.style.filter = 'none';
+          this.isSnapping = false;
+        }, 4000);
+      }
+    }
+
+    // Initialize Snap on Hero Image
+    const heroVisual = document.querySelector('.hero-visual');
+    if (heroVisual) {
+      // Target the image inside
+      const heroImg = heroVisual.querySelector('img');
+      if (heroImg) {
+        new DisintegrationEffect('.hero-visual', '.hero-visual img');
+      }
+    }
+
     console.log('main.js loaded — parallax & scramble initialized');
   }; // init
 

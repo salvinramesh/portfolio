@@ -212,7 +212,12 @@ nav a {
   display: flex;
   align-items: center;
   gap: 1rem;
-  flex-wrap: wrap
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 10;
+  /* Ensure above blobs */
+  pointer-events: auto;
 }
 
 .hero-logo {
@@ -237,9 +242,6 @@ nav a {
 .hero-visual img {
   width: 100%;
   max-width: 440px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, .45), 0 0 0 1px rgba(255, 255, 255, .06) inset;
-  backdrop-filter: saturate(1.2);
   transform: translateZ(0);
   opacity: .98;
   user-select: none;
@@ -255,12 +257,17 @@ nav a {
 
   .hero-title {
     justify-content: center;
+    pointer-events: auto;
+    /* Ensure clickable */
   }
 
   .hero-visual {
     display: block;
     margin: 0 auto;
     max-width: 320px;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto;
   }
 }
 
@@ -275,7 +282,7 @@ nav a {
   /* keep behind hero content (hero-wrap z-index:1) */
   pointer-events: none;
   /* don't block clicks */
-  mix-blend-mode: overlay;
+  mix-blend-mode: screen;
   /* stronger blending with background */
   opacity: 1;
   filter: contrast(1.15) saturate(1.05);
@@ -915,4 +922,17 @@ nav a {
     margin: 0 0.4rem;
     font-size: 0.9rem;
   }
+}
+
+/* Disintegration Particles */
+.dust-particle {
+  position: absolute;
+  background: var(--accent);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 1;
+  transition: transform 1s ease-out, opacity 1s ease-out;
+  z-index: 100;
 }
