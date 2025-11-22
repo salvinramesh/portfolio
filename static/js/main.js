@@ -143,7 +143,138 @@
       cards.forEach(c => { c.style.setProperty('--px', '0'); c.style.setProperty('--py', '0'); });
     }
 
-    console.log('main.js loaded — parallax initialized (DEBUG=' + dbg() + ')');
+    // HACKER SCRAMBLE EFFECT
+    class TextScramble {
+      constructor(el) {
+        this.el = el;
+        this.chars = '!<>-_\\/[]{}—=+*^?#________';
+        this.update = this.update.bind(this);
+      }
+      setText(newText) {
+        const oldText = this.el.innerText;
+        const length = Math.max(oldText.length, newText.length);
+        const promise = new Promise((resolve) => this.resolve = resolve);
+        this.queue = [];
+        for (let i = 0; i < length; i++) {
+          const from = oldText[i] || '';
+          const to = newText[i] || '';
+          const start = Math.floor(Math.random() * 40);
+          const end = start + Math.floor(Math.random() * 40);
+          this.queue.push({ from, to, start, end });
+        }
+        cancelAnimationFrame(this.frameRequest);
+        this.frame = 0;
+        this.update();
+        return promise;
+      }
+      update() {
+        let output = '';
+        let complete = 0;
+        for (let i = 0, n = this.queue.length; i < n; i++) {
+          let { from, to, start, end, char } = this.queue[i];
+          if (this.frame >= end) {
+            complete++;
+            output += to;
+          } else if (this.frame >= start) {
+            if (!char || Math.random() < 0.28) {
+              char = this.randomChar();
+              this.queue[i].char = char;
+            }
+            output += `<span class="dud">${char}</span>`;
+          } else {
+            output += from;
+          }
+        }
+        this.el.innerHTML = output;
+        if (complete === this.queue.length) {
+          this.resolve();
+        } else {
+          this.frameRequest = requestAnimationFrame(this.update);
+          this.frame++;
+        }
+      }
+      randomChar() {
+        return this.chars[Math.floor(Math.random() * this.chars.length)];
+      }
+    }
+
+    // Apply to About section headers or specific text
+    // For the main body text, scrambling the whole block is too much.
+    // Let's scramble the "About Me" title instead, and maybe the list items on hover.
+
+    const aboutTitle = document.querySelector('#about-title');
+    if (aboutTitle) {
+      const fx = new TextScramble(aboutTitle);
+      let counter = 0;
+      const phrases = [aboutTitle.innerText, 'System.Root.User', 'Access Granted', aboutTitle.innerText];
+
+      const next = () => {
+        fx.setText(phrases[counter]).then(() => {
+          setTimeout(next, 2000);
+        });
+        counter = (counter + 1) % phrases.length;
+      };
+      // Start the loop on hover
+      aboutTitle.addEventListener('mouseenter', () => {
+        fx.setText('Decrypting...').then(() => {
+          fx.setText(aboutTitle.getAttribute('data-original') || aboutTitle.innerText);
+        });
+      });
+      // Save original
+      aboutTitle.setAttribute('data-original', aboutTitle.innerText);
+    }
+
+    // For the body text, let's do a "Matrix Decode" style on the list items
+    const aboutBody = document.querySelector('.about-body');
+    if (aboutBody) {
+      // The linebreaks filter creates <p> tags.
+      const paragraphs = aboutBody.querySelectorAll('p');
+      if (paragraphs.length === 0) {
+        // Fallback if no p tags (e.g. raw text)
+        const html = aboutBody.innerHTML;
+        const lines = html.split(/<br\s*\/?>/i);
+        if (lines.length > 1) {
+          aboutBody.innerHTML = lines.map(line => `<span class="scramble-line">${line}</span>`).join('<br>');
+        }
+      } else {
+        paragraphs.forEach(p => {
+          const html = p.innerHTML;
+          // Split by <br> (case-insensitive, optional slash)
+          const parts = html.split(/<br\s*\/?>/i);
+          if (parts.length > 1) {
+            p.innerHTML = parts.map(line => {
+              const trimmed = line.trim();
+              return trimmed ? `<span class="scramble-line">${trimmed}</span>` : '';
+            }).join('<br>');
+          } else {
+            // Single line paragraph
+            p.innerHTML = `<span class="scramble-line">${html}</span>`;
+          }
+        });
+      }
+
+      // Re-select now that we've injected spans
+      const lines = document.querySelectorAll('.scramble-line');
+      lines.forEach(line => {
+        const originalText = line.innerText;
+        // Only scramble if text is substantial
+        if (originalText.length < 2) return;
+
+        const fx = new TextScramble(line);
+
+        line.addEventListener('mouseenter', () => {
+          fx.setText(originalText);
+          line.style.color = 'var(--accent)';
+          line.style.textShadow = '0 0 8px var(--accent)';
+        });
+        line.addEventListener('mouseleave', () => {
+          line.style.color = '';
+          line.style.textShadow = '';
+        });
+      });
+    }
+
+    console.log('main.js loaded — parallax & scramble initialized');
   }; // init
 
   if (document.readyState === 'loading') {

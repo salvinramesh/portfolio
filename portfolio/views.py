@@ -69,3 +69,10 @@ def home(request):
 def project_detail(request, pk):
     project = get_object_or_404(Project, pk=pk)
     return render(request, "portfolio_detail.html", {"project": project})
+
+
+from django.contrib.admin.views.decorators import staff_member_required
+
+@staff_member_required
+def personal(request):
+    return render(request, "personal.html", {"settings": _settings()})
