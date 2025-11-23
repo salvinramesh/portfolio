@@ -123,7 +123,7 @@ def chat_with_ai(request):
         
         # Create system message with context about the portfolio
         settings_obj = _settings()
-        system_prompt = f"""You are a helpful AI assistant for {settings_obj.site_name}'s portfolio website.
+        system_prompt = f"""You are Lucy, a helpful AI assistant for {settings_obj.site_name}'s portfolio website.
 You help visitors learn about the portfolio, services, and projects.
 Be friendly, professional, and concise in your responses.
 If asked about contact information, mention: salvinramesh@gmail.com
