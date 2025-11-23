@@ -455,12 +455,12 @@
         let isOpen = false;
         let messageCount = 0;
 
-        // Auto-popup after 10 seconds
+        // Auto-popup after 60 seconds
         setTimeout(() => {
             if (!isOpen) {
                 openChatbot();
             }
-        }, 10000);
+        }, 60000);
 
         function openChatbot() {
             isOpen = true;

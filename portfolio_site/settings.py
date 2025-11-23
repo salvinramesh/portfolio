@@ -88,6 +88,10 @@ TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
+LOGIN_REDIRECT_URL = 'dashboard_choice'
+LOGOUT_REDIRECT_URL = 'home'
+LOGIN_URL = '/admin/login/'
+
 # Static & media
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]

@@ -2,68 +2,52 @@
 {% load static %}
 
 {% block content %}
-<section class="section dark" style="padding-top: 120px; min-height: 80vh;">
-    <div class="container">
-        <a href="{% url 'personal' %}" class="btn btn-outline-light mb-4">&larr; Back to Personal Space</a>
+<link rel="stylesheet" href="{% static 'css/personal-futuristic.css' %}?v=1">
 
-        <div class="card" style="padding: 2rem; background-color: #1a1a2e; border: 1px solid var(--accent);">
-            <h1>{{ item.title }}</h1>
-            <p class="text-muted">Category: {{ item.category }}</p>
+<section class="section cyber-grid-bg" style="padding-top: 120px; min-height: 100vh;">
+    <div class="container">
+        <a href="{% url 'personal' %}" class="cyber-back-btn">&lt; RETURN_TO_DATABASE</a>
+
+        <div class="cyber-detail-container">
+            <h1 class="cyber-glitch-text" data-text="{{ item.title }}" style="font-size: 2rem; margin-bottom: 0.5rem;">
+                {{ item.title }}</h1>
+            <p style="color: var(--cyber-cyan); font-family: 'Courier New'; font-size: 0.9rem; margin-bottom: 2rem;">
+                > CATEGORY: {{ item.category|upper }}<br>
+                > ACCESS_LEVEL: AUTHORIZED
+            </p>
 
             {% if item.text_content %}
-            <div class="mb-4">
-                <p>{{ item.text_content|linebreaks }}</p>
+            <div class="mb-4" style="border-left: 2px solid var(--cyber-magenta); padding-left: 1rem;">
+                <p style="color: #e0e0e0; font-family: 'Courier New'; line-height: 1.6;">{{ item.text_content|linebreaks
+                    }}</p>
             </div>
             {% endif %}
 
             {% if item.file %}
             <div class="mb-4">
-                <h3>Document</h3>
-                <div class="document-viewer">
+                <h3
+                    style="color: var(--cyber-cyan); font-family: 'Courier New'; border-bottom: 1px solid rgba(0,245,255,0.3); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                    ATTACHED_DOCUMENT</h3>
+                <div class="cyber-doc-viewer">
                     <div class="document-icon">
                         {% if item.file.name|slice:"-4:" == ".pdf" %}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
-                            stroke="var(--accent)" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <text x="12" y="18" text-anchor="middle" fill="var(--accent)" font-size="6"
-                                font-weight="bold">PDF</text>
-                        </svg>
+                        <i class="fas fa-file-pdf" style="font-size: 3rem; color: var(--cyber-magenta);"></i>
                         {% elif item.file.name|slice:"-5:" == ".docx" or item.file.name|slice:"-4:" == ".doc" %}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
-                            stroke="#2B579A" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <text x="12" y="18" text-anchor="middle" fill="#2B579A" font-size="5"
-                                font-weight="bold">DOC</text>
-                        </svg>
+                        <i class="fas fa-file-word" style="font-size: 3rem; color: #2B579A;"></i>
                         {% else %}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
-                            stroke="var(--accent)" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                        </svg>
+                        <i class="fas fa-file" style="font-size: 3rem; color: var(--cyber-cyan);"></i>
                         {% endif %}
                     </div>
                     <div class="document-info">
-                        <p class="document-name">{{ item.file.name }}</p>
+                        <p class="document-name" style="color: #fff; font-family: 'Courier New';">{{ item.file.name }}
+                        </p>
                         <div class="document-actions">
-                            <a href="{{ item.file.url }}" target="_blank" class="btn btn-primary">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                </svg>
-                                View Document
+                            <a href="{{ item.file.url }}" target="_blank" class="cyber-back-btn">
+                                <i class="fas fa-eye"></i> VIEW_DATA
                             </a>
-                            <a href="{{ item.file.url }}" download class="btn btn-outline-primary">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="7 10 12 15 17 10"></polyline>
-                                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                                </svg>
-                                Download
+                            <a href="{{ item.file.url }}" download class="cyber-back-btn"
+                                style="border-color: var(--cyber-magenta); color: var(--cyber-magenta);">
+                                <i class="fas fa-download"></i> EXTRACT
                             </a>
                         </div>
                     </div>
@@ -73,21 +57,21 @@
 
             {% if item.image or item.images.exists %}
             <div class="mb-4">
-                <h3>Gallery</h3>
-                <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                <h3
+                    style="color: var(--cyber-cyan); font-family: 'Courier New'; border-bottom: 1px solid rgba(0,245,255,0.3); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                    VISUAL_RECORDS</h3>
+                <div class="cyber-gallery-grid">
                     {# Main Image #}
                     {% if item.image %}
-                    <div class="gallery-item" data-src="{{ item.image.url }}">
-                        <img src="{{ item.image.url }}" alt="{{ item.title }}"
-                            style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer;">
+                    <div class="gallery-item cyber-img-card" data-src="{{ item.image.url }}">
+                        <img src="{{ item.image.url }}" alt="{{ item.title }}">
                     </div>
                     {% endif %}
 
                     {# Extra Images #}
                     {% for img in item.images.all %}
-                    <div class="gallery-item" data-src="{{ img.image.url }}">
-                        <img src="{{ img.image.url }}" alt="{{ item.title }}"
-                            style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer;">
+                    <div class="gallery-item cyber-img-card" data-src="{{ img.image.url }}">
+                        <img src="{{ img.image.url }}" alt="{{ item.title }}">
                     </div>
                     {% endfor %}
                 </div>
@@ -95,7 +79,7 @@
             {% endif %}
 
             {% if not item.file and not item.image and not item.images.exists %}
-            <p class="text-muted">No files or images available.</p>
+            <p class="text-muted" style="font-family: 'Courier New';">DATA_CORRUPTED: No files or images found.</p>
             {% endif %}
         </div>
     </div>
