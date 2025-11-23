@@ -1,0 +1,490 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="section dark" style="padding-top: 120px; min-height: 80vh;">
+    <div class="container">
+        <a href="{% url 'personal' %}" class="btn btn-outline-light mb-4">&larr; Back to Personal Space</a>
+
+        <div class="card" style="padding: 2rem; background-color: #1a1a2e; border: 1px solid var(--accent);">
+            <h1>{{ item.title }}</h1>
+            <p class="text-muted">Category: {{ item.category }}</p>
+
+            {% if item.text_content %}
+            <div class="mb-4">
+                <p>{{ item.text_content|linebreaks }}</p>
+            </div>
+            {% endif %}
+
+            {% if item.file %}
+            <div class="mb-4">
+                <h3>Document</h3>
+                <div class="document-viewer">
+                    <div class="document-icon">
+                        {% if item.file.name|slice:"-4:" == ".pdf" %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+                            stroke="var(--accent)" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <text x="12" y="18" text-anchor="middle" fill="var(--accent)" font-size="6"
+                                font-weight="bold">PDF</text>
+                        </svg>
+                        {% elif item.file.name|slice:"-5:" == ".docx" or item.file.name|slice:"-4:" == ".doc" %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+                            stroke="#2B579A" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <text x="12" y="18" text-anchor="middle" fill="#2B579A" font-size="5"
+                                font-weight="bold">DOC</text>
+                        </svg>
+                        {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none"
+                            stroke="var(--accent)" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        {% endif %}
+                    </div>
+                    <div class="document-info">
+                        <p class="document-name">{{ item.file.name }}</p>
+                        <div class="document-actions">
+                            <a href="{{ item.file.url }}" target="_blank" class="btn btn-primary">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                View Document
+                            </a>
+                            <a href="{{ item.file.url }}" download class="btn btn-outline-primary">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if item.image or item.images.exists %}
+            <div class="mb-4">
+                <h3>Gallery</h3>
+                <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                    {# Main Image #}
+                    {% if item.image %}
+                    <div class="gallery-item" data-src="{{ item.image.url }}">
+                        <img src="{{ item.image.url }}" alt="{{ item.title }}"
+                            style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer;">
+                    </div>
+                    {% endif %}
+
+                    {# Extra Images #}
+                    {% for img in item.images.all %}
+                    <div class="gallery-item" data-src="{{ img.image.url }}">
+                        <img src="{{ img.image.url }}" alt="{{ item.title }}"
+                            style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer;">
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if not item.file and not item.image and not item.images.exists %}
+            <p class="text-muted">No files or images available.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Image Viewer Modal -->
+<div id="imageViewer" class="image-viewer">
+    <div class="viewer-header">
+        <button class="viewer-btn" id="closeViewer">&times;</button>
+    </div>
+
+    <div class="viewer-content">
+        <button class="viewer-nav viewer-prev" id="prevImage">&#10094;</button>
+        <div class="viewer-image-container">
+            <img id="viewerImage" src="" alt="">
+        </div>
+        <button class="viewer-nav viewer-next" id="nextImage">&#10095;</button>
+    </div>
+
+    <div class="viewer-controls">
+        <button class="viewer-btn" id="zoomIn">+</button>
+        <button class="viewer-btn" id="zoomOut">-</button>
+        <button class="viewer-btn" id="resetZoom">Reset</button>
+        <span class="viewer-counter" id="imageCounter"></span>
+    </div>
+</div>
+
+<style>
+    .document-viewer {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+    }
+
+    .document-icon {
+        flex-shrink: 0;
+    }
+
+    .document-info {
+        flex: 1;
+    }
+
+    .document-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--accent);
+        margin: 0 0 1rem 0;
+        word-break: break-all;
+    }
+
+    .document-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary,
+    .btn-outline-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background: var(--accent);
+        color: #000;
+        border: 2px solid var(--accent);
+    }
+
+    .btn-primary:hover {
+        background: transparent;
+        color: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(5, 176, 255, 0.4);
+    }
+
+    .btn-outline-primary {
+        background: transparent;
+        color: var(--accent);
+        border: 2px solid var(--accent);
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--accent);
+        color: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(5, 176, 255, 0.4);
+    }
+
+    .image-viewer {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 9999;
+        backdrop-filter: blur(10px);
+    }
+
+    .image-viewer.active {
+        display: flex;
+        flex-direction: column;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .viewer-header {
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .viewer-content {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .viewer-image-container {
+        max-width: 90%;
+        max-height: 90vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: auto;
+    }
+
+    .viewer-image-container img {
+        max-width: 100%;
+        max-height: 85vh;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 0 40px rgba(5, 176, 255, 0.3);
+        transition: transform 0.3s ease;
+        cursor: grab;
+    }
+
+    .viewer-image-container img.zoomed {
+        cursor: move;
+    }
+
+    .viewer-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(5, 176, 255, 0.2);
+        border: 2px solid var(--accent);
+        color: white;
+        font-size: 2rem;
+        padding: 1rem 1.5rem;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+
+    .viewer-nav:hover {
+        background: rgba(5, 176, 255, 0.4);
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .viewer-prev {
+        left: 2rem;
+    }
+
+    .viewer-next {
+        right: 2rem;
+    }
+
+    .viewer-controls {
+        padding: 1rem 2rem;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .viewer-btn {
+        background: rgba(5, 176, 255, 0.2);
+        border: 2px solid var(--accent);
+        color: white;
+        font-size: 1.2rem;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .viewer-btn:hover {
+        background: rgba(5, 176, 255, 0.4);
+        transform: scale(1.05);
+    }
+
+    #closeViewer {
+        font-size: 2.5rem;
+        padding: 0.25rem 1rem;
+        line-height: 1;
+    }
+
+    .viewer-counter {
+        color: var(--accent);
+        font-size: 1rem;
+        margin-left: 1rem;
+        font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .gallery-item img:hover {
+        transform: scale(1.05);
+        border-color: var(--accent);
+        box-shadow: 0 0 20px rgba(5, 176, 255, 0.3);
+        transition: all 0.3s ease;
+    }
+</style>
+
+<script>
+    // Image Viewer Logic
+    const viewer = document.getElementById('imageViewer');
+    const viewerImage = document.getElementById('viewerImage');
+    const imageCounter = document.getElementById('imageCounter');
+    const galleryItems = document.querySelectorAll('.gallery-item');
+
+    let currentIndex = 0;
+    let images = [];
+    let scale = 1;
+    let isDragging = false;
+    let startX, startY, translateX = 0, translateY = 0;
+
+    // Populate images array
+    galleryItems.forEach((item, index) => {
+        images.push(item.dataset.src);
+        item.addEventListener('click', () => openViewer(index));
+    });
+
+    function openViewer(index) {
+        currentIndex = index;
+        updateViewer();
+        viewer.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeViewer() {
+        viewer.classList.remove('active');
+        document.body.style.overflow = 'auto';
+        resetZoom();
+    }
+
+    function updateViewer() {
+        viewerImage.src = images[currentIndex];
+        imageCounter.textContent = `${currentIndex + 1} / ${images.length}`;
+    }
+
+    function nextImage() {
+        currentIndex = (currentIndex + 1) % images.length;
+        resetZoom();
+        updateViewer();
+    }
+
+    function prevImage() {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        resetZoom();
+        updateViewer();
+    }
+
+    function zoomIn() {
+        scale += 0.2;
+        applyZoom();
+    }
+
+    function zoomOut() {
+        scale = Math.max(1, scale - 0.2);
+        applyZoom();
+    }
+
+    function resetZoom() {
+        scale = 1;
+        translateX = 0;
+        translateY = 0;
+        applyZoom();
+        viewerImage.classList.remove('zoomed');
+    }
+
+    function applyZoom() {
+        viewerImage.style.transform = `scale(${scale}) translate(${translateX}px, ${translateY}px)`;
+        if (scale > 1) {
+            viewerImage.classList.add('zoomed');
+        } else {
+            viewerImage.classList.remove('zoomed');
+        }
+    }
+
+    // Event Listeners
+    document.getElementById('closeViewer').addEventListener('click', closeViewer);
+    document.getElementById('nextImage').addEventListener('click', nextImage);
+    document.getElementById('prevImage').addEventListener('click', prevImage);
+    document.getElementById('zoomIn').addEventListener('click', zoomIn);
+    document.getElementById('zoomOut').addEventListener('click', zoomOut);
+    document.getElementById('resetZoom').addEventListener('click', resetZoom);
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (!viewer.classList.contains('active')) return;
+
+        switch (e.key) {
+            case 'Escape':
+                closeViewer();
+                break;
+            case 'ArrowRight':
+                nextImage();
+                break;
+            case 'ArrowLeft':
+                prevImage();
+                break;
+            case '+':
+            case '=':
+                zoomIn();
+                break;
+            case '-':
+                zoomOut();
+                break;
+            case '0':
+                resetZoom();
+                break;
+        }
+    });
+
+    // Click outside to close
+    viewer.addEventListener('click', (e) => {
+        if (e.target === viewer) {
+            closeViewer();
+        }
+    });
+
+    // Drag to pan when zoomed
+    viewerImage.addEventListener('mousedown', (e) => {
+        if (scale > 1) {
+            isDragging = true;
+            startX = e.clientX - translateX;
+            startY = e.clientY - translateY;
+            viewerImage.style.cursor = 'grabbing';
+        }
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            translateX = e.clientX - startX;
+            translateY = e.clientY - startY;
+            applyZoom();
+        }
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        if (scale > 1) {
+            viewerImage.style.cursor = 'grab';
+        }
+    });
+
+    // Mouse wheel zoom
+    viewerImage.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+            zoomIn();
+        } else {
+            zoomOut();
+        }
+    });
+</script>
+{% endblock %}

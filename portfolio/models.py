@@ -93,3 +93,34 @@ class ContactMessage(TimeStamped):
 
     def __str__(self):
         return f"{self.name} — {self.subject}"
+
+
+class PersonalItem(TimeStamped):
+    CATEGORY_CHOICES = [
+        ('IDs', 'IDs'),
+        ('Docs', 'Docs'),
+        ('Photos', 'Photos'),
+        ('Others', 'Others'),
+    ]
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    title = models.CharField(max_length=150)
+    text_content = models.TextField(blank=True, help_text="For IDs (number) or Others (notes)")
+    file = models.FileField(upload_to="personal_docs/", blank=True, null=True, help_text="For Docs")
+    # Keeping 'image' for backward compatibility or single cover image, but new images will go to PersonalItemImage
+    image = models.ImageField(upload_to="personal_photos/", blank=True, null=True, help_text="For Photos or primary ID image")
+
+    class Meta:
+        ordering = ["-created"]
+
+    def __str__(self):
+        return f"[{self.category}] {self.title}"
+
+
+class PersonalItemImage(models.Model):
+    item = models.ForeignKey(PersonalItem, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="personal_photos/gallery/")
+    caption = models.CharField(max_length=200, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Image for {self.item.title}"

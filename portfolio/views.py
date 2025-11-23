@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 import logging
 
-from .models import SiteSettings, Service, Project, SocialLink
+from .models import SiteSettings, Service, Project, SocialLink, PersonalItem
 from .forms import ContactForm
 
 logger = logging.getLogger(__name__)
@@ -16,6 +16,10 @@ def _settings():
     if not obj:
         obj = SiteSettings.objects.create()
     return obj
+
+
+def contact_view(request):
+    return home(request)
 
 
 def home(request):
@@ -75,4 +79,14 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 @staff_member_required
 def personal(request):
-    return render(request, "personal.html", {"settings": _settings()})
+    items = PersonalItem.objects.all()
+    return render(request, "personal.html", {
+        "settings": _settings(),
+        "items": items,
+    })
+
+
+@staff_member_required
+def personal_item_detail(request, item_id):
+    item = get_object_or_404(PersonalItem, pk=item_id)
+    return render(request, "personal_detail.html", {"item": item})
