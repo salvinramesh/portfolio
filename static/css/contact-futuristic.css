@@ -120,7 +120,7 @@
 /* Form Group - Morphing Container */
 .contact-form .form-group {
     position: relative;
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
     transform-style: preserve-3d;
 }
 
@@ -146,6 +146,7 @@
 .contact-form textarea+label {
     top: 1.5rem;
     transform: translateY(0);
+    opacity: 0.6;
 }
 
 /* Input Fields - 3D Morphing with Liquid Effect */
@@ -166,9 +167,9 @@
 }
 
 .contact-form textarea {
-    min-height: 180px;
+    min-height: 100px;
     resize: vertical;
-    padding-top: 1.25rem;
+    padding: 1rem 1.25rem;
 }
 
 /* Focused State - Morphing Animation */

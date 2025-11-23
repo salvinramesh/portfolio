@@ -5,190 +5,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Access - Authentication Required</title>
+    <title>NEON_PROTOCOL // System Access</title>
     <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --cyber-cyan: #00f5ff;
-            --cyber-magenta: #ff0055;
-            --cyber-purple: #bc13fe;
-            --cyber-dark: #0a0a12;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            --neon-cyan: #00fff2;
+            --neon-pink: #ff00d4;
+            --dark-bg: #0a0a12;
+            --terminal-bg: #11111a;
+            --panel-color: #1a1a24;
         }
 
         body {
-            font-family: 'Courier New', monospace;
-            background-color: var(--cyber-dark);
-            background-image:
-                linear-gradient(rgba(0, 245, 255, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 245, 255, 0.1) 1px, transparent 1px);
-            background-size: 40px 40px;
-            min-height: 100vh;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--dark-bg);
+            background-image:
+                linear-gradient(rgba(0, 255, 242, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 242, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .login-terminal {
+            background: var(--terminal-bg);
+            padding: 40px 30px;
+            border: 2px solid var(--neon-cyan);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 255, 242, 0.3);
+            width: 400px;
+            text-align: center;
             position: relative;
         }
 
-        body::after {
-            content: '';
+        .login-terminal::before {
+            content: "";
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, transparent 0%, var(--cyber-dark) 90%);
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(transparent 0px,
+                    transparent 2px,
+                    rgba(0, 255, 242, 0.03) 3px);
             pointer-events: none;
-        }
-
-        .login-container {
-            width: 100%;
-            max-width: 500px;
-            margin: 2rem;
-            padding: 3rem;
-            background: rgba(10, 10, 18, 0.9);
-            border: 1px solid var(--cyber-cyan);
-            box-shadow: 0 0 30px rgba(0, 245, 255, 0.2);
-            clip-path: polygon(30px 0, 100% 0, 100% calc(100% - 30px), calc(100% - 30px) 100%, 0 100%, 0 30px);
-            position: relative;
             z-index: 10;
         }
 
-        .login-container::before {
-            content: '';
-            position: absolute;
-            top: -1px;
-            left: 20%;
-            width: 60%;
-            height: 2px;
-            background: var(--cyber-cyan);
-            box-shadow: 0 0 10px var(--cyber-cyan);
-        }
-
-        .login-corner {
-            position: absolute;
-            width: 15px;
-            height: 15px;
-            border: 2px solid var(--cyber-cyan);
-            opacity: 0.7;
-        }
-
-        .login-corner.tl {
-            top: 0;
-            left: 0;
-            border-right: none;
-            border-bottom: none;
-        }
-
-        .login-corner.tr {
-            top: 0;
-            right: 0;
-            border-left: none;
-            border-bottom: none;
-        }
-
-        .login-corner.bl {
-            bottom: 0;
-            left: 0;
-            border-right: none;
-            border-top: none;
-        }
-
-        .login-corner.br {
-            bottom: 0;
-            right: 0;
-            border-left: none;
-            border-top: none;
-        }
-
-        h1 {
-            color: var(--cyber-cyan);
+        h2 {
+            margin: 0 0 25px;
+            color: var(--neon-cyan);
             text-transform: uppercase;
-            letter-spacing: 4px;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            text-shadow: 0 0 10px var(--cyber-cyan);
-            font-size: 1.8rem;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 242, 0.5);
+            font-size: 1.2rem;
         }
 
-        .login-subtitle {
-            color: rgba(0, 245, 255, 0.7);
-            text-align: center;
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
-            letter-spacing: 1px;
-            line-height: 1.6;
+        .cyber-model-svg {
+            width: 150px;
+            height: 140px;
+            margin-bottom: 10px;
+            overflow: visible;
         }
 
-        .form-row {
-            margin-bottom: 1.5rem;
+        .circuit-line {
+            fill: none;
+            stroke: var(--neon-cyan);
+            stroke-width: 2;
+            stroke-linecap: round;
+            filter: url(#cyan-glow);
+        }
+
+        .accent-line {
+            stroke: var(--neon-pink);
+            filter: url(#pink-glow);
+        }
+
+        .optic-sensor-housing {
+            fill: var(--panel-color);
+            stroke: var(--neon-cyan);
+            stroke-width: 1;
+        }
+
+        .sensor-eye-core {
+            fill: var(--neon-pink);
+            filter: url(#pink-glow);
+            transition: transform 0.1s ease-out;
+        }
+
+        .blast-shield {
+            fill: var(--panel-color);
+            stroke: var(--neon-cyan);
+            stroke-width: 2;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            opacity: 0;
+        }
+
+        .login-terminal.password-mode .shield-left {
+            transform: translateX(38px);
+            opacity: 1;
+        }
+
+        .login-terminal.password-mode .shield-right {
+            transform: translateX(-38px);
+            opacity: 1;
+        }
+
+        .login-terminal.password-mode .sensor-eye-core {
+            opacity: 0.2;
+        }
+
+        .login-terminal.username-mode .circuit-line {
+            animation: pulse-circuit 2s infinite alternate;
+        }
+
+        @keyframes pulse-circuit {
+            from {
+                stroke-opacity: 0.7;
+            }
+
+            to {
+                stroke-opacity: 1;
+                filter: url(#cyan-glow-strong);
+            }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+            position: relative;
         }
 
         label {
             display: block;
-            color: rgba(255, 255, 255, 0.8);
-            text-transform: uppercase;
-            font-size: 0.85rem;
+            font-size: 0.7rem;
+            color: var(--neon-cyan);
+            margin-bottom: 8px;
             letter-spacing: 1px;
-            margin-bottom: 0.5rem;
         }
 
         input[type="text"],
         input[type="password"] {
             width: 100%;
-            padding: 0.8rem;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(0, 245, 255, 0.3);
-            color: #fff;
-            font-family: 'Courier New', monospace;
+            padding: 12px 45px 12px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+            border-left: 3px solid #555;
+            color: var(--neon-cyan);
+            font-family: 'Courier New', Courier, monospace;
             font-size: 1rem;
-            transition: all 0.3s ease;
+            box-sizing: border-box;
+            transition: all 0.3s;
         }
 
         input[type="text"]:focus,
         input[type="password"]:focus {
+            border-color: var(--neon-cyan);
+            border-left-color: var(--neon-pink);
             outline: none;
-            border-color: var(--cyber-cyan);
-            box-shadow: 0 0 15px rgba(0, 245, 255, 0.2);
-            background: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 0 15px rgba(0, 255, 242, 0.2);
+            background: rgba(0, 255, 242, 0.05);
         }
 
-        .submit-row {
-            text-align: center;
-            margin-top: 2rem;
-        }
-
-        input[type="submit"] {
-            background: rgba(0, 245, 255, 0.2);
-            border: 1px solid var(--cyber-cyan);
-            color: var(--cyber-cyan);
-            padding: 0.8rem 2rem;
-            font-family: 'Courier New', monospace;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.9rem;
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            bottom: 8px;
+            background: none;
+            border: none;
             cursor: pointer;
-            transition: all 0.3s ease;
-            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
-            font-weight: bold;
+            color: var(--neon-cyan);
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            z-index: 5;
         }
 
-        input[type="submit"]:hover {
-            background: rgba(0, 245, 255, 0.4);
-            box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
-            transform: translateY(-2px);
+        .toggle-password:hover {
+            opacity: 1;
+            color: var(--neon-pink);
+        }
+
+        .toggle-password svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .main-btn {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            color: var(--neon-cyan);
+            border: 2px solid var(--neon-cyan);
+            font-size: 1rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+            text-shadow: 0 0 5px var(--neon-cyan);
+        }
+
+        .main-btn:hover {
+            background: var(--neon-cyan);
+            color: var(--dark-bg);
+            box-shadow: 0 0 25px var(--neon-cyan);
         }
 
         .errornote {
-            background: rgba(255, 0, 85, 0.2);
-            border: 1px solid var(--cyber-magenta);
-            color: var(--cyber-magenta);
+            background: rgba(255, 0, 212, 0.2);
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
             padding: 1rem;
             margin-bottom: 1.5rem;
             text-align: center;
@@ -198,37 +229,69 @@
         }
 
         .errorlist {
-            background: rgba(255, 0, 85, 0.1);
-            border-left: 2px solid var(--cyber-magenta);
-            color: var(--cyber-magenta);
+            background: rgba(255, 0, 212, 0.1);
+            border-left: 2px solid var(--neon-pink);
+            color: var(--neon-pink);
             padding: 0.5rem 1rem;
             margin: 0.5rem 0;
             list-style: none;
             font-size: 0.85rem;
         }
-
-        .errorlist li {
-            margin: 0.25rem 0;
-        }
     </style>
 </head>
 
 <body>
-    <div class="login-container">
-        <div class="login-corner tl"></div>
-        <div class="login-corner tr"></div>
-        <div class="login-corner bl"></div>
-        <div class="login-corner br"></div>
+    <div class="login-terminal" id="loginTerminal">
+        <svg class="cyber-model-svg" viewBox="0 0 200 180">
+            <defs>
+                <filter id="cyan-glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
+                    <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+                <filter id="cyan-glow-strong" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
+                    <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+                <filter id="pink-glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+                    <feMerge>
+                        <feMergeNode in="blur" />
+                        <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                </filter>
+            </defs>
 
-        <h1>SYSTEM_ACCESS</h1>
-        <div class="login-subtitle">
-            > AUTHENTICATION REQUIRED<br>
-            > ENTER CREDENTIALS
-        </div>
+            <g id="helmet-structure">
+                <path class="circuit-line" d="M 70,150 L 100,170 L 130,150 L 140,120 M 70,150 L 60,120" />
+                <path class="circuit-line" d="M 60,120 L 50,80 L 70,30 L 100,20 L 130,30 L 150,80 L 140,120" />
+                <path class="circuit-line accent-line" d="M 90,35 L 100,45 L 110,35" />
+                <path class="circuit-line" d="M 100,20 L 100,45" />
+            </g>
+
+            <g id="eye-group">
+                <path class="optic-sensor-housing" d="M 60,70 L 90,70 L 95,85 L 55,85 Z" />
+                <path class="optic-sensor-housing" d="M 140,70 L 110,70 L 105,85 L 145,85 Z" />
+                <g id="pupils-container">
+                    <circle class="sensor-eye-core" id="eye-l-core" cx="75" cy="78" r="4" />
+                    <circle class="sensor-eye-core" id="eye-r-core" cx="125" cy="78" r="4" />
+                </g>
+            </g>
+
+            <path class="blast-shield shield-left" d="M 20,65 L 60,65 L 60,95 L 30,95 L 20,85 Z" />
+            <path class="blast-shield shield-right" d="M 180,65 L 140,65 L 140,95 L 170,95 L 180,85 Z" />
+        </svg>
+
+        <h2>> AUTH_REQUIRED</h2>
 
         {% if form.errors and not form.non_field_errors %}
         <p class="errornote">
-            > ACCESS DENIED: Invalid credentials
+            > ACCESS_DENIED: Invalid credentials
         </p>
         {% endif %}
 
@@ -238,9 +301,10 @@
         </p>
         {% endif %}
 
-        <form action="{{ app_path }}" method="post" id="login-form">
+        <form action="{{ app_path }}" method="post">
             {% csrf_token %}
-            <div class="form-row">
+
+            <div class="input-group">
                 {% if form.username.errors %}
                 <ul class="errorlist">
                     {% for error in form.username.errors %}
@@ -248,11 +312,11 @@
                     {% endfor %}
                 </ul>
                 {% endif %}
-                <label for="id_username">Username:</label>
+                <label for="id_username">>> NET_ID</label>
                 {{ form.username }}
             </div>
 
-            <div class="form-row">
+            <div class="input-group">
                 {% if form.password.errors %}
                 <ul class="errorlist">
                     {% for error in form.password.errors %}
@@ -260,17 +324,106 @@
                     {% endfor %}
                 </ul>
                 {% endif %}
-                <label for="id_password">Password:</label>
+                <label for="id_password">>> SECURITY_KEY</label>
                 {{ form.password }}
+
+                <button type="button" id="toggleBtn" class="toggle-password">
+                    <svg id="eye-icon" viewBox="0 0 24 24">
+                        <path
+                            d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                    </svg>
+                    <svg id="eye-off-icon" viewBox="0 0 24 24" style="display: none;">
+                        <path
+                            d="M11.83 9L15 12.17V12c0-1.66-1.34-3-3-3h-.17zm-3.66 2l4.66 4.66c-.25.13-.54.21-.83.21-1.1 0-2-.9-2-2 0-.29.08-.58.21-.83l-2.04-2.04zM12 4.5c5 0 9.27 3.11 11 7.5-1.73 4.39-6 7.5-11 7.5-1.55 0-3.03-.3-4.44-.83l1.98-1.98C10.14 16.91 11.06 17 12 17c2.76 0 5-2.24 5-5 0-.94-.25-1.82-.68-2.58l1.99-1.99C19.6 9.17 21.08 10.46 22 12c-1.73-4.39-6-7.5-11-7.5-2.19 0-4.23.6-6.01 1.63l2.51 2.51C8.69 7.55 10.3 7 12 7c-2.76 0-5 2.24-5 5 0 .6.12 1.17.33 1.7L2.93 4.29 1.66 5.56 18.44 22.34 19.71 21.07 11.83 9z" />
+                    </svg>
+                </button>
             </div>
 
             <input type="hidden" name="next" value="{{ next }}" />
 
-            <div class="submit-row">
-                <input type="submit" value="LOG IN" />
-            </div>
+            <button type="submit" class="main-btn">INITIALIZE_UPLINK</button>
         </form>
     </div>
+
+    <script>
+        const usernameInput = document.getElementById('id_username');
+        const passwordInput = document.getElementById('id_password');
+        const loginTerminal = document.getElementById('loginTerminal');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const eyeIcon = document.getElementById('eye-icon');
+        const eyeOffIcon = document.getElementById('eye-off-icon');
+
+        const leftEye = document.getElementById('eye-l-core');
+        const rightEye = document.getElementById('eye-r-core');
+
+        // USERNAME TRACKING LOGIC
+        usernameInput.addEventListener('focus', () => {
+            loginTerminal.classList.remove('password-mode');
+            loginTerminal.classList.add('username-mode');
+        });
+
+        usernameInput.addEventListener('blur', () => {
+            loginTerminal.classList.remove('username-mode');
+            resetEyes();
+        });
+
+        usernameInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            const length = val.length;
+            const maxLength = 20;
+            const trackData = Math.min(length, maxLength) / maxLength;
+            const movementRange = 14;
+            const startOffset = -7;
+            const currentOffset = startOffset + (movementRange * trackData);
+
+            leftEye.style.transform = `translateX(${currentOffset}px)`;
+            rightEye.style.transform = `translateX(${currentOffset}px)`;
+        });
+
+        function resetEyes() {
+            leftEye.style.transform = `translateX(0px)`;
+            rightEye.style.transform = `translateX(0px)`;
+        }
+
+        // PASSWORD LOGIC
+        function updateShieldState() {
+            const isPasswordFocused = (document.activeElement === passwordInput);
+            const isTextMode = (passwordInput.type === 'text');
+
+            if (isPasswordFocused && !isTextMode) {
+                loginTerminal.classList.add('password-mode');
+                resetEyes();
+            } else {
+                loginTerminal.classList.remove('password-mode');
+            }
+        }
+
+        passwordInput.addEventListener('focus', () => {
+            loginTerminal.classList.remove('username-mode');
+            updateShieldState();
+        });
+
+        passwordInput.addEventListener('blur', () => {
+            loginTerminal.classList.remove('password-mode');
+        });
+
+        // TOGGLE VIEW LOGIC
+        toggleBtn.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            if (type === 'text') {
+                eyeIcon.style.display = 'none';
+                eyeOffIcon.style.display = 'block';
+            } else {
+                eyeIcon.style.display = 'block';
+                eyeOffIcon.style.display = 'none';
+            }
+
+            updateShieldState();
+            passwordInput.focus();
+        });
+    </script>
 </body>
 
 </html>
