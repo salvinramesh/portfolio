@@ -10,10 +10,11 @@
             {% endif %}
         </a>
         <nav>
-            <a href="#services">Services</a>
-            <a href="#portfolio">Portfolio</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
+            <a href="/">Home</a>
+            <a href="/#services">Services</a>
+            <a href="/#portfolio">Portfolio</a>
+            <a href="/#about">About</a>
+            <a href="/#contact">Contact</a>
             {% if request.user.is_staff %}
             <a href="{% url 'personal' %}">Personal</a>
             {% else %}
