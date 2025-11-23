@@ -1,0 +1,197 @@
+/* ═══════════════════════════════════════════════════════════════
+   CYBERPUNK ABOUT SECTION STYLES
+   ══════════════════════════════════════════════════════════════ */
+
+.about-container {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+    margin-top: 2rem;
+}
+
+.about-content {
+    flex: 1;
+}
+
+.about-image-wrapper {
+    flex: 0 0 400px;
+    position: relative;
+    perspective: 1000px;
+}
+
+/* Cyber Frame Container */
+.cyber-frame {
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding: 10px;
+    background: rgba(10, 10, 20, 0.6);
+    clip-path: polygon(0 0,
+            100% 0,
+            100% 85%,
+            90% 100%,
+            0 100%);
+    transition: all 0.5s ease;
+}
+
+.cyber-frame::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, #00f5ff, #ff0096);
+    z-index: -1;
+    clip-path: polygon(0 0,
+            100% 0,
+            100% 85%,
+            90% 100%,
+            0 100%);
+    opacity: 0.5;
+    transition: all 0.5s ease;
+}
+
+.cyber-frame:hover {
+    transform: translateY(-5px) rotateY(5deg);
+}
+
+.cyber-frame:hover::before {
+    opacity: 1;
+    filter: blur(10px);
+}
+
+/* The Photo Itself */
+.about-photo {
+    width: 100%;
+    height: auto;
+    display: block;
+    filter: grayscale(20%) contrast(1.1);
+    clip-path: polygon(0 0,
+            100% 0,
+            100% 85%,
+            90% 100%,
+            0 100%);
+    position: relative;
+    z-index: 1;
+}
+
+/* Holographic Scan Lines */
+.cyber-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(0deg,
+            transparent 0px,
+            rgba(0, 245, 255, 0.1) 1px,
+            transparent 2px);
+    background-size: 100% 4px;
+    z-index: 2;
+    pointer-events: none;
+    animation: scanMove 10s linear infinite;
+}
+
+@keyframes scanMove {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 0 100%;
+    }
+}
+
+/* Glitch Effect Overlay */
+.cyber-glitch-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 3;
+    pointer-events: none;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+    clip-path: polygon(0 0,
+            100% 0,
+            100% 85%,
+            90% 100%,
+            0 100%);
+}
+
+.cyber-glitch-effect::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(transparent 0%,
+            rgba(0, 245, 255, 0.2) 50%,
+            transparent 100%);
+    transform: translateY(-100%);
+    animation: scanlineDrop 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes scanlineDrop {
+    0% {
+        transform: translateY(-100%);
+    }
+
+    100% {
+        transform: translateY(200%);
+    }
+}
+
+/* Corner Accents */
+.cyber-frame::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    width: 50px;
+    height: 50px;
+    border-bottom: 3px solid #00f5ff;
+    border-right: 3px solid #00f5ff;
+    z-index: 4;
+    transition: all 0.3s ease;
+}
+
+.cyber-frame:hover::after {
+    width: 100%;
+    height: 100%;
+    border-color: #ff0096;
+    box-shadow: 0 0 20px rgba(255, 0, 150, 0.5);
+}
+
+/* Tech Data Overlay */
+.about-image-wrapper::before {
+    content: 'ID: SALVIN_RAMESH // SYS_ADMIN';
+    position: absolute;
+    bottom: 20px;
+    left: -20px;
+    background: #00f5ff;
+    color: #000;
+    padding: 2px 10px;
+    font-family: monospace;
+    font-size: 12px;
+    font-weight: bold;
+    transform: rotate(-90deg);
+    transform-origin: left bottom;
+    z-index: 10;
+    box-shadow: 0 0 10px #00f5ff;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .about-container {
+        flex-direction: column-reverse;
+        text-align: center;
+        gap: 2rem;
+    }
+
+    .about-image-wrapper {
+        flex: 0 0 auto;
+        width: 80%;
+        max-width: 350px;
+    }
+}

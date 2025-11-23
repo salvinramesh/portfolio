@@ -373,11 +373,20 @@
 <section id="about" class="section dark" aria-labelledby="about-title">
   <div class="container">
     <h2 id="about-title">{{ settings.about_title }}</h2>
-    <div class="about-body">
-      {{ settings.about_summary|linebreaks }}
-      {% if settings.resume_file %}
-      <a class="btn" href="{{ settings.resume_file.url }}" download>Download Résumé</a>
-      {% endif %}
+    <div class="about-container">
+      <div class="about-content">
+        {{ settings.about_summary|linebreaks }}
+        {% if settings.resume_file %}
+        <a class="btn" href="{{ settings.resume_file.url }}" download>Download Résumé</a>
+        {% endif %}
+      </div>
+      <div class="about-image-wrapper">
+        <div class="cyber-frame">
+          <img src="/static/images/about-photo.jpg" alt="Salvin Ramesh" class="about-photo">
+          <div class="cyber-glitch-effect"></div>
+          <div class="cyber-lines"></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>

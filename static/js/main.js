@@ -253,7 +253,7 @@
     }
 
     // For the body text, let's do a "Matrix Decode" style on the list items
-    const aboutBody = document.querySelector('.about-body');
+    const aboutBody = document.querySelector('.about-content');
     if (aboutBody) {
       // The linebreaks filter creates <p> tags.
       const paragraphs = aboutBody.querySelectorAll('p');
