@@ -10,6 +10,7 @@ path("project/<int:pk>/", views.project_detail, name="project_detail"),
     path('personal/', views.personal, name='personal'),
     path('personal/<int:item_id>/', views.personal_item_detail, name='personal_item_detail'),
     path('contact/', views.contact_view, name='contact'),
+    path('api/chat/', views.chat_with_ai, name='chat_with_ai'),
 ]
 
 if settings.DEBUG:

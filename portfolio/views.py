@@ -4,7 +4,13 @@ from django.contrib import messages
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 import logging
+import json
+import os
+import google.generativeai as genai
 
 from .models import SiteSettings, Service, Project, SocialLink, PersonalItem
 from .forms import ContactForm
@@ -90,3 +96,56 @@ def personal(request):
 def personal_item_detail(request, item_id):
     item = get_object_or_404(PersonalItem, pk=item_id)
     return render(request, "personal_detail.html", {"item": item})
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def chat_with_ai(request):
+    """
+    API endpoint for chatbot to communicate with Google Gemini
+    """
+    try:
+        data = json.loads(request.body)
+        user_message = data.get('message', '')
+        
+        if not user_message:
+            return JsonResponse({'error': 'Message is required'}, status=400)
+        
+        # Get Gemini API key from environment
+        api_key = os.getenv('GEMINI_API_KEY')
+        if not api_key or api_key == 'your-gemini-api-key-here':
+            return JsonResponse({
+                'response': "I'm currently not connected to Gemini AI. Please configure the GEMINI_API_KEY in your .env file."
+            })
+        
+        # Configure Gemini
+        genai.configure(api_key=api_key)
+        
+        # Create system message with context about the portfolio
+        settings_obj = _settings()
+        system_prompt = f"""You are a helpful AI assistant for {settings_obj.site_name}'s portfolio website.
+You help visitors learn about the portfolio, services, and projects.
+Be friendly, professional, and concise in your responses.
+If asked about contact information, mention: salvinramesh@gmail.com
+Keep responses under 100 words."""
+        
+        # Initialize the model with gemini-2.0-flash
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        
+        # Generate response with context
+        full_prompt = f"{system_prompt}\n\nUser question: {user_message}\n\nYour response:"
+        response = model.generate_content(full_prompt)
+        
+        bot_response = response.text
+        
+        return JsonResponse({'response': bot_response})
+        
+    except Exception as e:
+        logger.error(f"Chat API error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({
+            'response': f"I apologize, but I'm having trouble processing your request. Error: {str(e)}",
+            'error_details': str(e)
+        }, status=500)
+
