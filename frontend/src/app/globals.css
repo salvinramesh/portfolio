@@ -1,0 +1,124 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --font-orbitron: 'Orbitron', sans-serif;
+  --font-rajdhani: 'Rajdhani', sans-serif;
+
+  /* Default (Cyber) */
+  --neon-cyan: #00f3ff;
+  --neon-purple: #bd00ff;
+  --neon-green: #0aff00;
+  --bg-dark: #050505;
+  --bg-panel: rgba(10, 15, 20, 0.7);
+}
+
+[data-theme='matrix'] {
+  --neon-cyan: #0aff00;
+  /* Matrix Green */
+  --neon-purple: #008f11;
+  /* Darker Green */
+  --bg-dark: #000000;
+}
+
+[data-theme='sunset'] {
+  --neon-cyan: #ff9d00;
+  /* Orange */
+  --neon-purple: #ff0055;
+  /* Pink/Red */
+  --bg-dark: #1a0505;
+}
+
+body {
+  font-family: var(--font-rajdhani);
+  background-color: var(--bg-dark);
+  color: #e0e0e0;
+  cursor: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-orbitron);
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 10px rgba(var(--neon-cyan), 0.5), 0 0 20px rgba(var(--neon-cyan), 0.3);
+    /* Note: this requires RGB vars or color-mix */
+    /* Simpler approach for now using color-mix if browser supported, or just let CSS var handle the hex and use a slight hack or predefined RGBA vars. 
+       Actually, standard hex vars cannot be used inside rgba(). 
+       Let's stick to using the variable directly for simple shadows or define RGB versions. */
+    text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+  }
+
+  .text-glow-purple {
+    text-shadow: 0 0 10px var(--neon-purple), 0 0 20px var(--neon-purple);
+  }
+
+  .border-glow {
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.2), inset 0 0 5px rgba(0, 243, 255, 0.1);
+  }
+
+  .cyber-box {
+    @apply bg-black/60 border border-cyan-900/50 backdrop-blur-md relative overflow-hidden;
+  }
+
+  .cyber-box::before {
+    content: '';
+    @apply absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-cyan-500;
+  }
+
+  .cyber-box::after {
+    content: '';
+    @apply absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-cyan-500;
+  }
+}
+
+/* Animations */
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.animate-scanlines {
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+
+  20% {
+    transform: translate(-2px, 2px);
+  }
+
+  40% {
+    transform: translate(-2px, -2px);
+  }
+
+  60% {
+    transform: translate(2px, 2px);
+  }
+
+  80% {
+    transform: translate(2px, -2px);
+  }
+
+  100% {
+    transform: translate(0);
+  }
+}
+
+.animate-glitch {
+  animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+}

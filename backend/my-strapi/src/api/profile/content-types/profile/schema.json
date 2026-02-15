@@ -1,0 +1,34 @@
+{
+    "kind": "singleType",
+    "collectionName": "profiles",
+    "info": {
+        "singularName": "profile",
+        "pluralName": "profiles",
+        "displayName": "Profile",
+        "description": "User profile information"
+    },
+    "options": {
+        "draftAndPublish": false
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "name": {
+            "type": "string",
+            "required": true
+        },
+        "title": {
+            "type": "string",
+            "required": true
+        },
+        "bio": {
+            "type": "richtext"
+        },
+        "resumeLink": {
+            "type": "string"
+        },
+        "avatarUrl": {
+            "type": "string",
+            "required": false
+        }
+    }
+}

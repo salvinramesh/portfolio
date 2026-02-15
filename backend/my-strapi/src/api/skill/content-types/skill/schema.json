@@ -1,0 +1,40 @@
+{
+    "kind": "collectionType",
+    "collectionName": "skills",
+    "info": {
+        "singularName": "skill",
+        "pluralName": "skills",
+        "displayName": "Skill",
+        "description": "Technical skills"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "name": {
+            "type": "string",
+            "required": true
+        },
+        "category": {
+            "type": "enumeration",
+            "enum": [
+                "Frontend",
+                "Backend",
+                "DevOps",
+                "Tools",
+                "Languages"
+            ],
+            "required": true
+        },
+        "proficiency": {
+            "type": "integer",
+            "min": 0,
+            "max": 100
+        },
+        "icon": {
+            "type": "string",
+            "default": "Code"
+        }
+    }
+}

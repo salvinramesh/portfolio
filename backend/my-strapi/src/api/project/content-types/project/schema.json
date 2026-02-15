@@ -1,0 +1,35 @@
+{
+    "kind": "collectionType",
+    "collectionName": "projects",
+    "info": {
+        "singularName": "project",
+        "pluralName": "projects",
+        "displayName": "Project",
+        "description": "Portfolio projects"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "title": {
+            "type": "string",
+            "required": true
+        },
+        "description": {
+            "type": "richtext"
+        },
+        "techStack": {
+            "type": "json"
+        },
+        "liveLink": {
+            "type": "string"
+        },
+        "githubLink": {
+            "type": "string"
+        },
+        "imageUrl": {
+            "type": "string"
+        }
+    }
+}
