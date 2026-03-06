@@ -224,30 +224,48 @@ export default {
       }
 
       // 6. Fix entries missing created_by_id (makes them visible in admin panel)
-      // Using raw knex because strapi.db.query doesn't expose admin relation fields
+      strapi.log.info('🛠️  Running Admin Visibility Fix...');
       const knex = strapi.db.connection;
       const adminUser = await knex('admin_users').select('id').first();
 
       if (adminUser) {
-        const tables = ['skills', 'projects', 'experiences', 'articles', 'profiles'];
+        const uids = [
+          'api::skill.skill',
+          'api::project.project',
+          'api::experience.experience',
+          'api::article.article',
+          'api::profile.profile',
+        ];
 
-        for (const table of tables) {
+        for (const uid of uids) {
           try {
-            const updated = await knex(table)
-              .whereNull('created_by_id')
-              .update({
-                created_by_id: adminUser.id,
-                updated_by_id: adminUser.id,
-              });
+            const contentType = strapi.contentType(uid);
+            if (!contentType) continue;
 
-            if (updated > 0) {
-              console.log(`✅ FIXED ${updated} orphaned entries in ${table}`);
+            const tableName = contentType.tableName;
+            
+            // Check if columns exist
+            const hasCreatedBy = await knex.schema.hasColumn(tableName, 'created_by_id');
+            const hasUpdatedBy = await knex.schema.hasColumn(tableName, 'updated_by_id');
+
+            if (hasCreatedBy && hasUpdatedBy) {
+              const updated = await knex(tableName)
+                .whereNull('created_by_id')
+                .update({
+                  created_by_id: adminUser.id,
+                  updated_by_id: adminUser.id,
+                });
+
+              if (updated > 0) {
+                strapi.log.info(`✅ FIXED ${updated} orphaned entries in ${tableName} (${uid})`);
+              }
             }
-          } catch (err) {
-            // Table might not exist yet, skip silently
+          } catch (err: any) {
+            strapi.log.error(`❌ Failed to fix visibility for ${uid}: ${err.message}`);
           }
         }
       }
+      strapi.log.info('🛠️  Admin Visibility Fix Completed');
     } catch (error) {
       console.error('❌ BOOTSTRAP ERROR:', error);
     }
