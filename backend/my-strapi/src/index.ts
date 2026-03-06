@@ -224,31 +224,27 @@ export default {
       }
 
       // 6. Fix entries missing created_by_id (makes them visible in admin panel)
-      const adminUser = await strapi.db.query('admin::user').findOne({});
+      // Using raw knex because strapi.db.query doesn't expose admin relation fields
+      const knex = strapi.db.connection;
+      const adminUser = await knex('admin_users').select('id').first();
+
       if (adminUser) {
-        const contentTypes = [
-          'api::skill.skill',
-          'api::project.project',
-          'api::experience.experience',
-          'api::article.article',
-        ];
+        const tables = ['skills', 'projects', 'experiences', 'articles', 'profiles'];
 
-        for (const uid of contentTypes) {
-          const orphanedEntries = await strapi.db.query(uid).findMany({
-            where: { createdBy: null },
-          });
-
-          if (orphanedEntries.length > 0) {
-            for (const entry of orphanedEntries) {
-              await strapi.db.query(uid).update({
-                where: { id: entry.id },
-                data: {
-                  createdBy: adminUser.id,
-                  updatedBy: adminUser.id,
-                },
+        for (const table of tables) {
+          try {
+            const updated = await knex(table)
+              .whereNull('created_by_id')
+              .update({
+                created_by_id: adminUser.id,
+                updated_by_id: adminUser.id,
               });
+
+            if (updated > 0) {
+              console.log(`✅ FIXED ${updated} orphaned entries in ${table}`);
             }
-            console.log(`✅ FIXED ${orphanedEntries.length} orphaned entries in ${uid}`);
+          } catch (err) {
+            // Table might not exist yet, skip silently
           }
         }
       }
