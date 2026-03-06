@@ -32,8 +32,6 @@ services:
       NODE_ENV: production
       # Define HOST so Strapi binds to 0.0.0.0 (all interfaces) within the container
       HOST: 0.0.0.0
-    ports:
-      - "1337:1337"
     depends_on:
       - postgres
     volumes:
@@ -48,8 +46,6 @@ services:
       NEXT_PUBLIC_STRAPI_URL: ${NEXT_PUBLIC_STRAPI_URL:-http://localhost:1337}
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
       PORT: 3000
-    ports:
-      - "3000:3000"
     depends_on:
       - backend
 
