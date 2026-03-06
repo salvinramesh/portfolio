@@ -19,10 +19,6 @@ COPY . .
 # Next.js telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Accept build arguments
-ARG GEMINI_API_KEY
-ENV GEMINI_API_KEY=$GEMINI_API_KEY
-
 RUN npm run build
 
 # Production image, copy all the files and run next
@@ -31,10 +27,6 @@ WORKDIR /app
 
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
-
-# Bring in the API key to the runtime
-ARG GEMINI_API_KEY
-ENV GEMINI_API_KEY=$GEMINI_API_KEY
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

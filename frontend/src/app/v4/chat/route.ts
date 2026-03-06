@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { unstable_noStore as noStore } from 'next/cache';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export const dynamic = 'force-dynamic';
@@ -27,6 +28,7 @@ LIMITATIONS:
 `;
 
 export async function POST(req: Request) {
+    noStore(); // Force dynamic execution for runtime env parsing
     try {
         const { messages } = await req.json();
 
