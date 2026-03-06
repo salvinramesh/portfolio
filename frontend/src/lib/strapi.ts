@@ -1,4 +1,5 @@
-export const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+// Server-side: use internal Docker network URL; Client-side/fallback: use public URL
+export const STRAPI_URL = process.env.STRAPI_INTERNAL_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
 
 export interface StrapiResponse<T> {
     data: T;
@@ -72,8 +73,9 @@ export async function fetchAPI<T>(
         const queryString = new URLSearchParams(urlParamsObject as Record<string, string>).toString();
         const requestUrl = `${STRAPI_URL}/api${path}${queryString ? `?${queryString}` : ''}`;
 
-        // Trigger API call (Disable cache for real-time updates in production)
-        const response = await fetch(requestUrl, { ...mergedOptions, next: { revalidate: 0 } });
+        // Trigger API call (no-store = always fetch fresh from Strapi)
+        console.log(`Fetching: ${requestUrl}`);
+        const response = await fetch(requestUrl, { ...mergedOptions, cache: 'no-store' });
 
         // Handle response
         if (!response.ok) {
