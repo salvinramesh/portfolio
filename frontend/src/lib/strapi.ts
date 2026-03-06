@@ -72,8 +72,8 @@ export async function fetchAPI<T>(
         const queryString = new URLSearchParams(urlParamsObject as Record<string, string>).toString();
         const requestUrl = `${STRAPI_URL}/api${path}${queryString ? `?${queryString}` : ''}`;
 
-        // Trigger API call
-        const response = await fetch(requestUrl, { ...mergedOptions, next: { revalidate: 3600 } }); // ISR: revalidate hourly
+        // Trigger API call (Disable cache for real-time updates in production)
+        const response = await fetch(requestUrl, { ...mergedOptions, next: { revalidate: 0 } });
 
         // Handle response
         if (!response.ok) {
