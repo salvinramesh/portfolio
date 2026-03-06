@@ -48,6 +48,10 @@ services:
       NEXT_PUBLIC_STRAPI_URL: ${NEXT_PUBLIC_STRAPI_URL:-http://localhost:1337}
       NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
+      EVOLUTION_API_URL: ${EVOLUTION_API_URL:-https://evolution.salvin.me}
+      EVOLUTION_API_KEY: ${EVOLUTION_API_KEY}
+      EVOLUTION_INSTANCE_NAME: ${EVOLUTION_INSTANCE_NAME}
+      WHATSAPP_NUMBER: ${WHATSAPP_NUMBER}
       PORT: 3000
     depends_on:
       - backend

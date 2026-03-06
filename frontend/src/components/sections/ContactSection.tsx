@@ -1,14 +1,55 @@
 'use client';
 
-import { Mail, Phone, Github, Linkedin, Twitter, Instagram, Send } from 'lucide-react';
+import { useState } from 'react';
+import { Mail, Phone, Github, Linkedin, Twitter, Instagram, Send, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function ContactSection() {
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        message: ''
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const socialLinks = [
         { name: 'GitHub', icon: Github, url: 'https://github.com/salvinramesh', color: 'hover:text-purple-500' },
         { name: 'LinkedIn', icon: Linkedin, url: 'https://www.linkedin.com/in/salvinramesh', color: 'hover:text-blue-500' },
         { name: 'X / Twitter', icon: Twitter, url: 'https://x.com/salvinramesh1', color: 'hover:text-white' },
         { name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/salvinramesh', color: 'hover:text-pink-500' },
     ];
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        if (!formData.name || !formData.email || !formData.message) {
+            toast.error('All fields are required.');
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                toast.success('Transmission Successful! Salvin will get back to you soon.');
+                setFormData({ name: '', email: '', message: '' });
+            } else {
+                throw new Error(data.error || 'Transmission failed.');
+            }
+        } catch (error: any) {
+            toast.error(error.message || 'Transmission Encountered an Error.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <section id="contact" className="py-20 px-4 relative overflow-hidden">
@@ -78,22 +119,56 @@ export default function ContactSection() {
 
                         <h3 className="text-xl font-bold font-orbitron text-purple-400 mb-6">ENCRYPTED MESSAGE</h3>
 
-                        <form className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-1">
                                 <label className="text-xs font-mono text-gray-500 uppercase">Identity</label>
-                                <input type="text" className="w-full bg-black/50 border border-gray-800 rounded p-2 text-cyan-300 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/50 transition-all font-mono text-sm" placeholder="ENTER NAME" />
+                                <input 
+                                    type="text" 
+                                    required
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    className="w-full bg-black/50 border border-gray-800 rounded p-2 text-cyan-300 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/50 transition-all font-mono text-sm" 
+                                    placeholder="ENTER NAME" 
+                                />
                             </div>
                             <div className="space-y-1">
                                 <label className="text-xs font-mono text-gray-500 uppercase">Coordinates</label>
-                                <input type="email" className="w-full bg-black/50 border border-gray-800 rounded p-2 text-cyan-300 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/50 transition-all font-mono text-sm" placeholder="ENTER EMAIL" />
+                                <input 
+                                    type="email" 
+                                    required
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    className="w-full bg-black/50 border border-gray-800 rounded p-2 text-cyan-300 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/50 transition-all font-mono text-sm" 
+                                    placeholder="ENTER EMAIL" 
+                                />
                             </div>
                             <div className="space-y-1">
                                 <label className="text-xs font-mono text-gray-500 uppercase">Data Packet</label>
-                                <textarea rows={4} className="w-full bg-black/50 border border-gray-800 rounded p-2 text-cyan-300 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/50 transition-all font-mono text-sm" placeholder="ENTER MESSAGE CONTENT..."></textarea>
+                                <textarea 
+                                    rows={4} 
+                                    required
+                                    value={formData.message}
+                                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                    className="w-full bg-black/50 border border-gray-800 rounded p-2 text-cyan-300 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500/50 transition-all font-mono text-sm" 
+                                    placeholder="ENTER MESSAGE CONTENT..."
+                                ></textarea>
                             </div>
-                            <button type="button" className="w-full py-3 bg-gradient-to-r from-purple-900 to-cyan-900 border border-cyan-500/30 rounded text-white font-bold font-orbitron tracking-widest hover:from-purple-700 hover:to-cyan-700 hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(0,243,255,0.2)] transition-all flex items-center justify-center gap-2 group">
-                                TRANSMIT
-                                <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            <button 
+                                type="submit" 
+                                disabled={isSubmitting}
+                                className="w-full py-3 bg-gradient-to-r from-purple-900 to-cyan-900 border border-cyan-500/30 rounded text-white font-bold font-orbitron tracking-widest hover:from-purple-700 hover:to-cyan-700 hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(0,243,255,0.2)] transition-all flex items-center justify-center gap-2 group disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        TRANSMITTING...
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                    </>
+                                ) : (
+                                    <>
+                                        TRANSMIT
+                                        <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                    </>
+                                )}
                             </button>
                         </form>
                     </div>
