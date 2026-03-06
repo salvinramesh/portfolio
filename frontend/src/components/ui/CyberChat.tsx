@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
+import { Mic, VolumeX } from 'lucide-react';
 
 interface Message {
     role: 'user' | 'assistant' | 'system';
@@ -16,7 +17,10 @@ export default function CyberChat() {
     ]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isListening, setIsListening] = useState(false);
+    const [isSpeaking, setIsSpeaking] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const recognitionRef = useRef<any>(null);
     const { theme } = useTheme();
 
     const color = theme === 'matrix' ? '#0aff00' : theme === 'sunset' ? '#ff9d00' : '#00f3ff';
@@ -24,6 +28,70 @@ export default function CyberChat() {
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, isLoading]);
+
+    // Text to Speech
+    const speak = useCallback((text: string) => {
+        if (!window.speechSynthesis) return;
+        
+        // Cancel any ongoing speech
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        
+        // Pick a futuristic/neutral voice if available
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v => v.name.includes('Google UK English Male') || v.name.includes('Male')) || voices[0];
+        if (preferredVoice) utterance.voice = preferredVoice;
+        
+        utterance.pitch = 0.8; // Slightly deeper, robotic
+        utterance.rate = 1.1;  // Slightly faster
+
+        utterance.onstart = () => setIsSpeaking(true);
+        utterance.onend = () => setIsSpeaking(false);
+        utterance.onerror = () => setIsSpeaking(false);
+
+        window.speechSynthesis.speak(utterance);
+    }, []);
+
+    const stopSpeaking = () => {
+        if (window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+            setIsSpeaking(false);
+        }
+    };
+
+    // Speech to Text
+    const startListening = () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert("Voice recognition not supported in this browser.");
+            return;
+        }
+
+        stopSpeaking(); // Don't listen to self
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => setIsListening(true);
+        recognition.onresult = (event: any) => {
+            const transcript = event.results[0][0].transcript;
+            setInput(transcript);
+            setIsListening(false);
+        };
+        recognition.onerror = () => setIsListening(false);
+        recognition.onend = () => setIsListening(false);
+
+        recognitionRef.current = recognition;
+        recognition.start();
+    };
+
+    const stopListening = () => {
+        if (recognitionRef.current) {
+            recognitionRef.current.stop();
+        }
+    };
 
     const handleSend = async () => {
         if (!input.trim() || isLoading) return;
@@ -47,6 +115,7 @@ export default function CyberChat() {
             const data = await res.json();
             const botMsg: Message = { role: 'assistant', content: data.content };
             setMessages(prev => [...prev, botMsg]);
+            speak(data.content);
         } catch (error) {
             console.error(error);
             setMessages(prev => [...prev, { role: 'assistant', content: "⚠️ CONNECTION ERROR: Unable to reach neural core. Please try again." }]);
@@ -126,18 +195,39 @@ export default function CyberChat() {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                                    placeholder="Ask anything..."
-                                    disabled={isLoading}
+                                    placeholder={isListening ? "Listening..." : "Ask anything..."}
+                                    disabled={isLoading || isListening}
                                     className="flex-1 bg-transparent text-xs font-mono text-white outline-none placeholder-gray-600 disabled:opacity-50"
                                 />
-                                <button
-                                    onClick={handleSend}
-                                    disabled={isLoading}
-                                    className="text-xs font-mono px-2 py-1 border rounded hover:bg-white/5 transition-colors disabled:opacity-50"
-                                    style={{ borderColor: `${color}40`, color }}
-                                >
-                                    SEND
-                                </button>
+                                
+                                {/* Voice Actions */}
+                                <div className="flex items-center gap-1">
+                                    {isSpeaking && (
+                                        <button
+                                            onClick={stopSpeaking}
+                                            className="p-1.5 rounded-full hover:bg-red-900/20 text-red-500 transition-colors"
+                                            title="Stop speaking"
+                                        >
+                                            <VolumeX size={16} />
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={isListening ? stopListening : startListening}
+                                        disabled={isLoading || isSpeaking}
+                                        className={`p-1.5 rounded-full transition-all ${isListening ? 'bg-red-500/20 text-red-500 animate-pulse' : 'hover:bg-white/5 text-gray-400'}`}
+                                        title={isListening ? "Stop listening" : "Start voice input"}
+                                    >
+                                        <Mic size={16} />
+                                    </button>
+                                    <button
+                                        onClick={handleSend}
+                                        disabled={isLoading || isListening}
+                                        className="text-xs font-mono px-2 py-1 border rounded hover:bg-white/5 transition-colors disabled:opacity-50"
+                                        style={{ borderColor: `${color}40`, color }}
+                                    >
+                                        SEND
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </motion.div>
@@ -145,4 +235,12 @@ export default function CyberChat() {
             </AnimatePresence>
         </>
     );
+}
+
+// Add types for Web Speech API
+declare global {
+    interface Window {
+        SpeechRecognition: any;
+        webkitSpeechRecognition: any;
+    }
 }
