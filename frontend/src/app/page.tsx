@@ -10,7 +10,7 @@ import BlogSection from '@/components/sections/BlogSection';
 import ThreatMap from '@/components/sections/ThreatMap';
 import ContactSection from '@/components/sections/ContactSection';
 
-
+export const dynamic = 'force-dynamic';
 
 export default function Home() {
   return (
