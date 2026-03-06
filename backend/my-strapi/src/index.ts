@@ -222,6 +222,36 @@ export default {
           }
         }));
       }
+
+      // 6. Fix entries missing created_by_id (makes them visible in admin panel)
+      const adminUser = await strapi.db.query('admin::user').findOne({});
+      if (adminUser) {
+        const contentTypes = [
+          'api::skill.skill',
+          'api::project.project',
+          'api::experience.experience',
+          'api::article.article',
+        ];
+
+        for (const uid of contentTypes) {
+          const orphanedEntries = await strapi.db.query(uid).findMany({
+            where: { createdBy: null },
+          });
+
+          if (orphanedEntries.length > 0) {
+            for (const entry of orphanedEntries) {
+              await strapi.db.query(uid).update({
+                where: { id: entry.id },
+                data: {
+                  createdBy: adminUser.id,
+                  updatedBy: adminUser.id,
+                },
+              });
+            }
+            console.log(`✅ FIXED ${orphanedEntries.length} orphaned entries in ${uid}`);
+          }
+        }
+      }
     } catch (error) {
       console.error('❌ BOOTSTRAP ERROR:', error);
     }
