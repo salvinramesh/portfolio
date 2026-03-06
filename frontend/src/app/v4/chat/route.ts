@@ -3,10 +3,6 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export const dynamic = 'force-dynamic';
 
-// Initialize Gemini only if key exists
-const genAI = process.env.GEMINI_API_KEY
-    ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-    : null;
 
 const SYSTEM_PROMPT = `
 You are SALVIN, a highly advanced System Architect AI. You represent Salvin Ramesh, an IT Engineer and Linux System Administrator.
@@ -37,6 +33,11 @@ export async function POST(req: Request) {
         // Get the last message from the user
         const lastMessage = messages[messages.length - 1];
         const userQuery = lastMessage.content;
+
+        // Initialize Gemini only if key exists (fetch at runtime to avoid build caching)
+        const genAI = process.env.GEMINI_API_KEY
+            ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+            : null;
 
         // Fallback if no API key
         if (!genAI) {
