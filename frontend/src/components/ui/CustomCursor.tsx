@@ -201,27 +201,24 @@ export default function CustomCursor() {
             </motion.svg>
 
             {/* ── Click Ripples ── */}
-            <AnimatePresence>
-                {ripples.map(ripple => (
-                    <motion.div
-                        key={ripple.id}
-                        className="absolute rounded-full"
-                        style={{
-                            left: ripple.x,
-                            top: ripple.y,
-                            x: -20,
-                            y: -20,
-                            width: 40,
-                            height: 40,
-                            border: `1px solid ${color}`,
-                        }}
-                        initial={{ scale: 0.3, opacity: 0.8 }}
-                        animate={{ scale: 2.5, opacity: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.6, ease: 'easeOut' }}
-                    />
-                ))}
-            </AnimatePresence>
+            {ripples.map(ripple => (
+                <motion.div
+                    key={ripple.id}
+                    className="absolute rounded-full pointer-events-none"
+                    style={{
+                        left: ripple.x,
+                        top: ripple.y,
+                        x: -20,
+                        y: -20,
+                        width: 40,
+                        height: 40,
+                        border: `1px solid ${color}`,
+                    }}
+                    initial={{ scale: 0.3, opacity: 0.8 }}
+                    animate={{ scale: 2.5, opacity: 0 }}
+                    transition={{ duration: 0.6, ease: 'easeOut' }}
+                />
+            ))}
 
             {/* ── Soft Glow Halo ── */}
             <motion.div

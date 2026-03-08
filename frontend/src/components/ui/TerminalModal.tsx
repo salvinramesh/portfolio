@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { X, Minus, Square } from 'lucide-react';
-import { useTheme } from '@/context/ThemeContext';
 import useSonic from '@/hooks/useSonic';
 
 interface CommandHistory {
@@ -18,7 +17,7 @@ export default function TerminalModal() {
     ]);
     const inputRef = useRef<HTMLInputElement>(null);
     const bottomRef = useRef<HTMLDivElement>(null);
-    const { playClick, playSuccess, playHover } = useSonic();
+    const { playClick, playSuccess } = useSonic();
 
     // Toggle with backtick (~)
     useEffect(() => {

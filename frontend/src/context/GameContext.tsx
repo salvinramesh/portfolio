@@ -1,7 +1,6 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import { toast } from 'sonner';
 
 interface Mission {
     id: string;
@@ -37,23 +36,23 @@ const INITIAL_MISSIONS: Mission[] = [
 ];
 
 export function GameProvider({ children }: { children: ReactNode }) {
-    const [state, setState] = useState<GameState>({
-        clearanceLevel: 1,
-        eggsFound: [],
-        maxLevel: 5,
-        missions: INITIAL_MISSIONS,
-        xp: 0,
-        isHackingMinigameActive: false,
-    });
-
-    // Load from localStorage on mount
-    useEffect(() => {
-        const saved = localStorage.getItem('salvin_game_v4');
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            setState({ ...parsed, isHackingMinigameActive: false }); // Always start inactive
+    const [state, setState] = useState<GameState>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('salvin_game_v4');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                return { ...parsed, isHackingMinigameActive: false };
+            }
         }
-    }, []);
+        return {
+            clearanceLevel: 1,
+            eggsFound: [],
+            maxLevel: 5,
+            missions: INITIAL_MISSIONS,
+            xp: 0,
+            isHackingMinigameActive: false,
+        };
+    });
 
     // Save to localStorage on change
     useEffect(() => {

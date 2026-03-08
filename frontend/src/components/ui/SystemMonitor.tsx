@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Activity, Cpu, Wifi, Lock, ChevronUp, ChevronDown } from 'lucide-react';
 
 export default function SystemMonitor() {
@@ -16,6 +16,7 @@ export default function SystemMonitor() {
         net: 0,
         fps: 60
     });
+    const [ramGraph, setRamGraph] = useState<number[]>([10, 20, 50, 40, 80, 20, 10, 60, 40, 20]);
 
     const monitorRef = useRef<HTMLDivElement>(null);
     const logsEndRef = useRef<HTMLDivElement>(null);
@@ -58,6 +59,7 @@ export default function SystemMonitor() {
                 net: Math.floor(Math.random() * (900 - 100) + 100),
                 fps: Math.floor(Math.random() * (62 - 58) + 58)
             });
+            setRamGraph(Array.from({ length: 10 }).map(() => Math.floor(Math.random() * 100)));
         }, 2000);
 
         return () => clearInterval(interval);
@@ -120,8 +122,8 @@ export default function SystemMonitor() {
                     </div>
                     <div className="text-xl font-bold text-green-400">{metrics.net} Mb/s</div>
                     <div className="flex gap-0.5 mt-2 h-1 items-end">
-                        {Array.from({ length: 10 }).map((_, i) => (
-                            <div key={i} className={`flex-1 bg-green-500/50 rounded-sm`} style={{ height: `${Math.random() * 100}%` }}></div>
+                        {ramGraph.map((val, i) => (
+                            <div key={i} className="flex-1 bg-green-500/50 rounded-sm transition-all duration-[2000ms]" style={{ height: `${val}%` }}></div>
                         ))}
                     </div>
                 </div>
