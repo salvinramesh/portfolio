@@ -58,6 +58,7 @@ services:
       TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
       TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER}
       SMS_RECEIVER: ${SMS_RECEIVER}
+      UPLINK_API_KEY: ${UPLINK_API_KEY}
       PORT: 3000
     depends_on:
       - backend
