@@ -33,7 +33,7 @@ export async function POST(req: Request) {
         // ---------------------------------------------------------
         // 4. Email Output Configuration (Uplink)
         // ---------------------------------------------------------
-        const uplinkKey = process.env.UPLINK_API_KEY || "uk_4356d8ded872e6bbf919fcfaf105fda2:sk_6a0e2daa29238c9838f1a6dec368e56f3c049237646a28ff";
+        const uplinkKey = process.env.UPLINK_API_KEY;
         const uplinkUrl = "https://uplink.salvin.me/v1/send";
 
         // Validate basic sender info exists
