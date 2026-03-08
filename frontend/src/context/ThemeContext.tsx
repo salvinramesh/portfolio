@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-type Theme = 'cyber' | 'matrix' | 'sunset' | 'god';
+type Theme = 'cyber' | 'matrix' | 'sunset' | 'god' | 'critical';
 
 interface ThemeContextType {
     theme: Theme;

@@ -112,9 +112,39 @@ function Scene() {
     const groupRef = useRef<THREE.Group>(null);
     const { theme } = useTheme();
     const [pings, setPings] = useState<PingData[]>([]);
+    const [visitor, setVisitor] = useState<{ lat: number, lon: number, city: string, country: string } | null>(null);
     const pingIdRef = useRef(0);
 
     const color = theme === 'matrix' ? '#0aff00' : theme === 'sunset' ? '#ff9d00' : '#00f3ff';
+    const alertColor = '#ff0055'; // Red for the actual visitor
+
+    // Fetch Real Visitor IP
+    useEffect(() => {
+        let mounted = true;
+        const fetchLocation = async () => {
+            try {
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                if (mounted && data.latitude && data.longitude) {
+                    setVisitor({
+                        lat: data.latitude,
+                        lon: data.longitude,
+                        city: data.city || 'UNKNOWN',
+                        country: data.country_name || 'UNKNOWN'
+                    });
+                    
+                    // Dispatch a cyber log
+                    window.dispatchEvent(new CustomEvent('cyber_log', { 
+                        detail: `[SEC] INCOMING CONNECTION: ${data.city || 'UNKNOWN_CITY'}, ${data.country_name || 'UNKNOWN_REGION'} [IP_LOGGED]` 
+                    }));
+                }
+            } catch (error) {
+                console.error("Could not trace visitor IP", error);
+            }
+        };
+        fetchLocation();
+        return () => { mounted = false; };
+    }, []);
 
     useFrame(() => {
         if (groupRef.current) {
@@ -125,18 +155,26 @@ function Scene() {
     // Generate random pings
     useEffect(() => {
         const interval = setInterval(() => {
-            const from = LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
-            let to = LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
-            while (to.name === from.name) {
-                to = LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
+            // If we have a visitor, occasionally make them the source of a ping
+            const useVisitor = visitor && Math.random() > 0.7;
+            const fromRaw = useVisitor 
+                ? { name: visitor.city, lat: visitor.lat, lon: visitor.lon } 
+                : LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
+            
+            const from = { name: fromRaw.name, lat: fromRaw.lat, lon: fromRaw.lon };
+            
+            let toRaw = LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
+            while (toRaw.name === from.name) {
+                toRaw = LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
             }
+            const to = { name: toRaw.name, lat: toRaw.lat, lon: toRaw.lon };
 
             const id = pingIdRef.current++;
             setPings(prev => [...prev.slice(-5), { id, from, to, progress: 0, active: true }]);
         }, 2000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [visitor]);
 
     // Animate pings
     useEffect(() => {
@@ -165,6 +203,15 @@ function Scene() {
                     color={color}
                 />
             ))}
+
+            {/* Visitor Dot */}
+            {visitor && (
+                <LocationDot
+                    position={latLonToVec3(visitor.lat, visitor.lon, 2.03)} // Slightly higher Z to prevent z-fighting
+                    name={`${visitor.city} [YOU]`}
+                    color={alertColor}
+                />
+            )}
 
             {/* Connection arcs */}
             {pings.map((ping) => (

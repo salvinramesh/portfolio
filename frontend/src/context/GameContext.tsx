@@ -65,28 +65,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
         setState(prev => ({ ...prev, isHackingMinigameActive: active }));
     }, []);
 
-    const foundEasterEgg = useCallback((id: string, name: string) => {
-        // Dispatch to Activity Log
-        if (typeof window !== 'undefined') {
-            window.dispatchEvent(new CustomEvent('cyber_log', { detail: `[SEC] ANOMALY DETECTED: ${name.toUpperCase()} ACCESSED.` }));
-        }
-
-        setState(prev => {
-            if (prev.eggsFound.includes(id)) return prev;
-
-            // toast.success(`EASTER EGG FOUND: ${name}`);
-            const newCount = prev.eggsFound.length + 1;
-
-            return {
-                ...prev,
-                eggsFound: [...prev.eggsFound, id],
-            };
-        });
-
-        // Check if this egg completes a mission
-        if (id === 'konami') checkMission('konami_code');
-    }, []);
-
     const checkMission = useCallback((actionId: string) => {
         setState(prev => {
             const missionIndex = prev.missions.findIndex(m => m.id === actionId);
@@ -102,12 +80,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
             const newLevel = Math.min(prev.maxLevel, 1 + Math.floor(newXp / 100));
 
             // Notify
-            // toast.success(`MISSION COMPLETE: ${newMissions[missionIndex].title} (+${xpGained} XP)`);
             if (newLevel > prev.clearanceLevel) {
-                // toast.success(`PROMOTION: SECURITY CLEARANCE LEVEL ${newLevel}`);
                 if (typeof window !== 'undefined') {
                     window.dispatchEvent(new CustomEvent('cyber_log', { detail: `[SEC] PROMOTION GRANTED: CLEARANCE LEVEL V${newLevel}` }));
-                    // Also dispatch a specific event so the badge can react
                     window.dispatchEvent(new CustomEvent('level_up', { detail: newLevel }));
                 }
             }
@@ -120,6 +95,27 @@ export function GameProvider({ children }: { children: ReactNode }) {
             };
         });
     }, []);
+
+    const foundEasterEgg = useCallback((id: string, name: string) => {
+        // Dispatch to Activity Log
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('cyber_log', { detail: `[SEC] ANOMALY DETECTED: ${name.toUpperCase()} ACCESSED.` }));
+        }
+
+        setState(prev => {
+            if (prev.eggsFound.includes(id)) return prev;
+
+            return {
+                ...prev,
+                eggsFound: [...prev.eggsFound, id],
+            };
+        });
+
+        // Check if this egg completes a mission
+        if (id === 'konami') {
+            checkMission('konami_code');
+        }
+    }, [checkMission]);
 
     return (
         <GameContext.Provider value={{ state, foundEasterEgg, checkMission, setHackingMinigameActive }}>

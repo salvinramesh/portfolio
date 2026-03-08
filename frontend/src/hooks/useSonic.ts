@@ -24,11 +24,16 @@ export default function useSonic() {
         SoundManager.stopAmbient();
     }, []);
 
+    const setAmbientFrequency = useCallback((freq: number) => {
+        SoundManager.setAmbientFrequency(freq);
+    }, []);
+
     return {
         playHover,
         playClick,
         playSuccess,
         playAmbient,
-        stopAmbient
+        stopAmbient,
+        setAmbientFrequency
     };
 }

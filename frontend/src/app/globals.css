@@ -14,11 +14,15 @@
 }
 
 [data-theme='matrix'] {
-  --neon-cyan: #0aff00;
-  /* Matrix Green */
-  --neon-purple: #008f11;
-  /* Darker Green */
+  --neon-cyan: #0aff00; /* Matrix Green */
+  --neon-purple: #008f11; /* Darker Green */
   --bg-dark: #000000;
+}
+
+[data-theme='critical'] {
+  --neon-cyan: #ff0000; /* Blood Red */
+  --neon-purple: #8b0000; /* Dark Red */
+  --bg-dark: #1a0000; 
 }
 
 [data-theme='sunset'] {

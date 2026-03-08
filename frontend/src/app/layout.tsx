@@ -16,6 +16,7 @@ import AudioVisualizer from "@/components/ui/AudioVisualizer";
 import DynamicOverlays from "@/components/ui/DynamicOverlays";
 import HackingMinigame from "@/components/ui/HackingMinigame";
 import GridBackground from "@/components/ui/GridBackground";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -55,6 +56,7 @@ export default function RootLayout({
             <CustomCursor />
             <AudioVisualizer />
             <ClearanceBadge />
+            <ThemeToggle />
             <DynamicOverlays />
             <HackingMinigame />
             {children}

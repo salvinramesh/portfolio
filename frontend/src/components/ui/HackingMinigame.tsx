@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useGame } from '@/context/GameContext';
 import { Terminal, Lock, Unlock, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 
 export default function HackingMinigame() {
     const { state, setHackingMinigameActive, checkMission } = useGame();
@@ -11,6 +12,7 @@ export default function HackingMinigame() {
     const [logs, setLogs] = useState<string[]>(['INITIALIZING OVERRIDE PROTOCOL...', 'AWAITING COMMAND (hint: decrypt_profile):']);
     const [isSuccess, setIsSuccess] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+    const router = useRouter();
 
     // Auto-focus input
     useEffect(() => {
@@ -31,11 +33,12 @@ export default function HackingMinigame() {
         setLogs(prev => [...prev, `> ${cmd}`]);
 
         if (cmd === 'decrypt_profile') {
-            setLogs(prev => [...prev, '[SYS] BYPASSING MAINFRAME...', '[SYS] ACCESS GRANTED.']);
+            setLogs(prev => [...prev, '[SYS] BYPASSING MAINFRAME...', '[SYS] ACCESS GRANTED.', '[SYS] REDIRECTING TO CLASSIFIED SECTOR...']);
             setIsSuccess(true);
             checkMission('konami_code');
             setTimeout(() => {
                 setHackingMinigameActive(false);
+                router.push('/admin-classified');
             }, 3000);
         } else if (cmd === 'exit' || cmd === 'quit' || cmd === 'abort') {
             setLogs(prev => [...prev, '[SYS] ABORTING SEQUENCE...']);

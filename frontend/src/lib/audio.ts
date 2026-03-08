@@ -5,7 +5,8 @@ export class SoundManager {
 
     private static init() {
         if (!this.ctx && typeof window !== 'undefined') {
-            this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+            this.ctx = new AudioContextClass();
             this.masterGain = this.ctx.createGain();
             this.masterGain.gain.value = 0.15; // Default volume
             this.masterGain.connect(this.ctx.destination);
@@ -157,5 +158,11 @@ export class SoundManager {
             this.lfo.disconnect();
             this.lfo = null;
         }
+    }
+
+    static setAmbientFrequency(freq: number) {
+        if (!this.enabled || !this.ctx || !this.ambientOsc) return;
+        // Smoothly ramp to the new frequency to avoid popping
+        this.ambientOsc.frequency.linearRampToValueAtTime(freq, this.ctx.currentTime + 0.1);
     }
 }

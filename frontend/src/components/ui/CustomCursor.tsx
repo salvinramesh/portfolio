@@ -67,6 +67,31 @@ export default function CustomCursor() {
         };
     }, [isMobile, handleMove, handleDown, handleUp]);
 
+    // Trail generation effect
+    const [trail, setTrail] = useState<{ id: number; x: number; y: number }[]>([]);
+    
+    useEffect(() => {
+        if (isMobile) return;
+        
+        let animationFrameId: number;
+        
+        const updateTrail = () => {
+            setTrail(prev => {
+                const newPoint = { id: Date.now(), x: mouseX.get(), y: mouseY.get() };
+                const newTrail = [...prev, newPoint];
+                // Keep only the last 15 points
+                if (newTrail.length > 15) {
+                    newTrail.shift();
+                }
+                return newTrail;
+            });
+            animationFrameId = requestAnimationFrame(updateTrail);
+        };
+        
+        animationFrameId = requestAnimationFrame(updateTrail);
+        return () => cancelAnimationFrame(animationFrameId);
+    }, [isMobile, mouseX, mouseY]);
+
     if (isMobile) return null;
 
     return (
@@ -89,6 +114,25 @@ export default function CustomCursor() {
                 }}
                 transition={{ type: 'spring', stiffness: 500, damping: 28 }}
             />
+
+            {/* ── Lightcycle Trail ── */}
+            {trail.map((point, i) => (
+                <div
+                    key={point.id}
+                    className="absolute rounded-full pointer-events-none"
+                    style={{
+                        width: 4,
+                        height: 4,
+                        backgroundColor: color,
+                        left: point.x,
+                        top: point.y,
+                        transform: 'translate(-50%, -50%)',
+                        opacity: (i + 1) / trail.length, // Fade out the older it gets
+                        boxShadow: `0 0 ${4 + (i/2)}px 1px ${color}`,
+                        zIndex: 9998 - (trail.length - i) // Older dots go behind newer ones
+                    }}
+                />
+            ))}
 
             {/* ── Inner Tracking Ring ── */}
             <motion.div
