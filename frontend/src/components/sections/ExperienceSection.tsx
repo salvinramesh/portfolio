@@ -49,9 +49,6 @@ export default async function ExperienceSection() {
             <div className="relative border-l-2 border-cyan-900/30 ml-4 md:ml-10 space-y-12">
                 {/* Main Vertical Line is the border of the container */}
 
-import ExperienceItemClient from './ExperienceItemClient';
-
-// ... (existing imports inside ExperienceSection, ensuring we just return the client component in the map)
                 {experiences.map((exp) => (
                     <ExperienceItemClient key={exp.id} exp={exp} />
                 ))}
