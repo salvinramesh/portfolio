@@ -3,15 +3,25 @@
 import { useGame } from '@/context/GameContext';
 import { Shield, Lock, Unlock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function ClearanceBadge() {
     const { state } = useGame();
     const [isHovered, setIsHovered] = useState(false);
+    const [justLeveledUp, setJustLeveledUp] = useState(false);
     const { theme } = useTheme();
 
     const color = theme === 'matrix' ? '#0aff00' : theme === 'sunset' ? '#ff9d00' : '#00f3ff';
+
+    useEffect(() => {
+        const handleLevelUp = (e: Event) => {
+            setJustLeveledUp(true);
+            setTimeout(() => setJustLeveledUp(false), 3000);
+        };
+        window.addEventListener('level_up', handleLevelUp);
+        return () => window.removeEventListener('level_up', handleLevelUp);
+    }, []);
 
     // Safety check for state
     if (!state) return null;
@@ -25,11 +35,15 @@ export default function ClearanceBadge() {
     return (
         <div className="fixed top-6 right-24 z-50 hidden md:block">
             <motion.div
-                className="relative bg-black/80 backdrop-blur-md border rounded-lg px-3 py-1.5 flex items-center gap-3 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-help select-none group"
-                style={{ borderColor: `${color}40` }}
+                className={`relative bg-black/80 backdrop-blur-md border rounded-lg px-3 py-1.5 flex items-center gap-3 shadow-[0_0_15px_rgba(0,0,0,0.5)] cursor-help select-none group transition-all duration-300 ${justLeveledUp ? 'shadow-[0_0_30px_#00f3ff]' : ''}`}
+                style={{ borderColor: justLeveledUp ? '#00f3ff' : `${color}40` }}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
-                whileHover={{ scale: 1.05 }}
+                animate={{ 
+                    scale: justLeveledUp ? [1, 1.1, 1] : isHovered ? 1.05 : 1,
+                    borderColor: justLeveledUp ? ['#00f3ff', `${color}40`, '#00f3ff'] : `${color}40`
+                }}
+                transition={{ duration: justLeveledUp ? 0.5 : 0.2, repeat: justLeveledUp ? 5 : 0 }}
             >
                 {/* Icon */}
                 <div className="relative">

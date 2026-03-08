@@ -14,6 +14,8 @@ import AudioVisualizer from "@/components/ui/AudioVisualizer";
 
 // Lazily loaded — interactive features & overlays (via client wrapper)
 import DynamicOverlays from "@/components/ui/DynamicOverlays";
+import HackingMinigame from "@/components/ui/HackingMinigame";
+import GridBackground from "@/components/ui/GridBackground";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -44,15 +46,17 @@ export default function RootLayout({
         className={`${orbitron.variable} ${rajdhani.variable} font-sans antialiased bg-black text-white selection:bg-cyan-500/30 selection:text-cyan-200 overflow-x-hidden`}
       >
         <ScanlineOverlay />
+        <GridBackground />
         <ParticleBackground />
         <ScrollProgress />
-        <div className="fixed inset-0 z-[-1] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-900/50 via-black to-black"></div>
+        <div className="fixed inset-0 z-[-3] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-900/50 via-black to-black"></div>
         <ThemeProvider>
           <GameProvider>
             <CustomCursor />
             <AudioVisualizer />
             <ClearanceBadge />
             <DynamicOverlays />
+            <HackingMinigame />
             {children}
           </GameProvider>
         </ThemeProvider>

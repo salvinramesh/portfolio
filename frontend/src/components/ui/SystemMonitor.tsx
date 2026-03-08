@@ -6,6 +6,10 @@ import { Activity, Cpu, Wifi, Lock, ChevronUp, ChevronDown } from 'lucide-react'
 
 export default function SystemMonitor() {
     const [isExpanded, setIsExpanded] = useState(false);
+    const [logs, setLogs] = useState<string[]>([
+        "[SYS] INITIALIZING KERNEL MODULES...",
+        "[SYS] ESTABLISHING SECURE CONNECTION...",
+    ]);
     const [metrics, setMetrics] = useState({
         cpu: 0,
         mem: 0,
@@ -14,6 +18,27 @@ export default function SystemMonitor() {
     });
 
     const monitorRef = useRef<HTMLDivElement>(null);
+    const logsEndRef = useRef<HTMLDivElement>(null);
+
+    // Listen for custom cyber logs anywhere in the app
+    useEffect(() => {
+        const handleCyberLog = (e: Event) => {
+            const customEvent = e as CustomEvent<string>;
+            setLogs(prev => {
+                const newLogs = [...prev, customEvent.detail];
+                return newLogs.slice(-20); // Keep last 20 logs
+            });
+        };
+        window.addEventListener('cyber_log', handleCyberLog);
+        return () => window.removeEventListener('cyber_log', handleCyberLog);
+    }, []);
+
+    // Auto-scroll logs
+    useEffect(() => {
+        if (logsEndRef.current) {
+            logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [logs, isExpanded]);
 
     // Broadcast visible height as CSS variable for other bottom-positioned elements
     useEffect(() => {
@@ -114,6 +139,21 @@ export default function SystemMonitor() {
                     </div>
                 </div>
             </div>
+
+            {/* Activity Log (Visible when expanded) */}
+            {isExpanded && (
+                <div className="px-4 pb-4">
+                    <div className="bg-black/80 border border-cyan-900/40 p-2 rounded h-24 overflow-y-auto font-mono text-[10px] space-y-1">
+                        {logs.map((log, index) => (
+                            <div key={index} className="text-cyan-500/80">
+                                <span className="text-gray-500 mr-2">{new Date().toLocaleTimeString('en-US', { hour12: false, hour: 'numeric', minute: 'numeric', second: 'numeric' })}</span>
+                                {log}
+                            </div>
+                        ))}
+                        <div ref={logsEndRef} />
+                    </div>
+                </div>
+            )}
         </motion.div>
     );
 }

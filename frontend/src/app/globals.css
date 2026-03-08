@@ -79,6 +79,26 @@ h6 {
 }
 
 /* Animations */
+@keyframes cyber-scan {
+  0% { transform: translateY(-100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+.animate-cyber-scan {
+  animation: cyber-scan 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes grid-scroll {
+  from { background-position: 0 0; }
+  to { background-position: 0 4rem; }
+}
+
+.animate-grid-scroll {
+  animation: grid-scroll 2s linear infinite;
+}
+
 @keyframes scanline {
   0% {
     transform: translateY(-100%);

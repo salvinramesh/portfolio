@@ -8,8 +8,17 @@ interface SkillCardProps {
 }
 
 export default function SkillCard({ name, icon: Icon, category, proficiency }: SkillCardProps) {
+    const handleHover = () => {
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('cyber_log', { detail: `[SYS] LOADING MODULE: ${name.toUpperCase()}...` }));
+        }
+    };
+
     return (
-        <div className="cyber-box group p-6 hover:shadow-[0_0_30px_rgba(0,243,255,0.2)] transition-all duration-300">
+        <div onMouseEnter={handleHover} className="cyber-box group p-6 hover:shadow-[0_0_30px_rgba(0,243,255,0.2)] transition-all duration-300 relative overflow-hidden">
+            {/* Cybernetic Scanline */}
+            <div className="absolute top-0 left-0 w-full h-[2px] bg-purple-500 shadow-[0_0_15px_#bd00ff] z-[100] opacity-0 group-hover:animate-cyber-scan pointer-events-none"></div>
+
             <div className="absolute top-0 right-0 p-2 opacity-50 font-mono text-[10px] text-cyan-800">SYS_ID_{name.length.toString().padStart(3, '0')}</div>
 
             <div className="relative z-10 flex flex-col items-center gap-4">

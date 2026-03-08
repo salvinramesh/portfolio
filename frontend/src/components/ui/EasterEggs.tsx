@@ -15,7 +15,7 @@ import useSonic from '@/hooks/useSonic';
  */
 
 export default function EasterEggs() {
-    const { foundEasterEgg } = useGame();
+    const { foundEasterEgg, setHackingMinigameActive } = useGame();
     const { setTheme } = useTheme();
     const { playSuccess } = useSonic();
     const [konamiProgress, setKonamiProgress] = useState(0);
@@ -29,7 +29,8 @@ export default function EasterEggs() {
             if (e.key === konamiCode[konamiProgress]) {
                 const next = konamiProgress + 1;
                 if (next === konamiCode.length) {
-                    foundEasterEgg('konami', 'Konami Code');
+                    // Trigger Minigame instead of instant success
+                    setHackingMinigameActive(true);
                     setTheme('god');
                     playSuccess();
                     setKonamiProgress(0);

@@ -17,12 +17,14 @@ interface GameState {
     maxLevel: number;
     missions: Mission[];
     xp: number;
+    isHackingMinigameActive: boolean;
 }
 
 interface GameContextType {
     state: GameState;
     foundEasterEgg: (id: string, name: string) => void;
     checkMission: (actionId: string) => void;
+    setHackingMinigameActive: (active: boolean) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -41,22 +43,34 @@ export function GameProvider({ children }: { children: ReactNode }) {
         maxLevel: 5,
         missions: INITIAL_MISSIONS,
         xp: 0,
+        isHackingMinigameActive: false,
     });
 
     // Load from localStorage on mount
     useEffect(() => {
         const saved = localStorage.getItem('salvin_game_v4');
         if (saved) {
-            setState(JSON.parse(saved));
+            const parsed = JSON.parse(saved);
+            setState({ ...parsed, isHackingMinigameActive: false }); // Always start inactive
         }
     }, []);
 
     // Save to localStorage on change
     useEffect(() => {
-        localStorage.setItem('salvin_game_v4', JSON.stringify(state));
+        const stateToSave = { ...state, isHackingMinigameActive: false }; 
+        localStorage.setItem('salvin_game_v4', JSON.stringify(stateToSave));
     }, [state]);
 
+    const setHackingMinigameActive = useCallback((active: boolean) => {
+        setState(prev => ({ ...prev, isHackingMinigameActive: active }));
+    }, []);
+
     const foundEasterEgg = useCallback((id: string, name: string) => {
+        // Dispatch to Activity Log
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('cyber_log', { detail: `[SEC] ANOMALY DETECTED: ${name.toUpperCase()} ACCESSED.` }));
+        }
+
         setState(prev => {
             if (prev.eggsFound.includes(id)) return prev;
 
@@ -91,6 +105,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
             // toast.success(`MISSION COMPLETE: ${newMissions[missionIndex].title} (+${xpGained} XP)`);
             if (newLevel > prev.clearanceLevel) {
                 // toast.success(`PROMOTION: SECURITY CLEARANCE LEVEL ${newLevel}`);
+                if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('cyber_log', { detail: `[SEC] PROMOTION GRANTED: CLEARANCE LEVEL V${newLevel}` }));
+                    // Also dispatch a specific event so the badge can react
+                    window.dispatchEvent(new CustomEvent('level_up', { detail: newLevel }));
+                }
             }
 
             return {
@@ -103,7 +122,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }, []);
 
     return (
-        <GameContext.Provider value={{ state, foundEasterEgg, checkMission }}>
+        <GameContext.Provider value={{ state, foundEasterEgg, checkMission, setHackingMinigameActive }}>
             {children}
         </GameContext.Provider>
     );

@@ -6,9 +6,10 @@ import { motion, useSpring } from 'framer-motion';
 interface HoloCardProps {
     children: React.ReactNode;
     className?: string;
+    onMouseEnter?: () => void;
 }
 
-export default function HoloCard({ children, className = '' }: HoloCardProps) {
+export default function HoloCard({ children, className = '', onMouseEnter }: HoloCardProps) {
     const ref = useRef<HTMLDivElement>(null);
     const [hover, setHover] = useState(false);
 
@@ -40,6 +41,9 @@ export default function HoloCard({ children, className = '' }: HoloCardProps) {
 
     const handleMouseEnter = () => {
         setHover(true);
+        if (onMouseEnter) {
+            onMouseEnter();
+        }
     };
 
     return (

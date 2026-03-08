@@ -14,8 +14,17 @@ import HoloCard from './HoloCard';
 import HolographicImage from './HolographicImage';
 
 export default function ProjectCard({ title, description, imageUrl, techStack, link, githubLink }: ProjectCardProps) {
+    const handleHover = () => {
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('cyber_log', { detail: `[NET] SCANNING ASSET: ${title.toUpperCase()}...` }));
+        }
+    };
+
     return (
-        <HoloCard className="cyber-box group hover:border-purple-500/50 transition-colors duration-500 h-full">
+        <HoloCard onMouseEnter={handleHover} className="cyber-box group hover:border-purple-500/50 transition-colors duration-500 h-full relative overflow-hidden">
+            {/* Cybernetic Scanline */}
+            <div className="absolute top-0 left-0 w-full h-[2px] bg-cyan-400 shadow-[0_0_15px_#00f3ff] z-[100] opacity-0 group-hover:animate-cyber-scan pointer-events-none"></div>
+
             <div className="relative h-48 w-full overflow-hidden border-b border-cyan-900/30">
                 <div className="absolute inset-0 bg-cyan-500/5 z-10 mix-blend-overlay"></div>
                 <div className="absolute inset-0 bg-[url('/scanlines.png')] opacity-10 z-20 pointer-events-none"></div>
