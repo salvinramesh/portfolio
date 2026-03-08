@@ -11,6 +11,7 @@ export default function ContactSection() {
         message: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
 
     const socialLinks = [
         { name: 'GitHub', icon: Github, url: 'https://github.com/salvinramesh', color: 'hover:text-purple-500' },
@@ -39,6 +40,7 @@ export default function ContactSection() {
             const data = await res.json();
 
             if (res.ok) {
+                setIsSuccess(true);
                 toast.success('Transmission Successful! Salvin will get back to you soon.');
                 setFormData({ name: '', email: '', message: '' });
             } else {
@@ -119,6 +121,33 @@ export default function ContactSection() {
 
                         <h3 className="text-xl font-bold font-orbitron text-purple-400 mb-6">ENCRYPTED MESSAGE</h3>
 
+                        {isSuccess ? (
+                            <div className="flex flex-col items-center justify-center p-8 space-y-6 animate-in fade-in duration-500">
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-cyan-500/20 rounded-full blur-xl animate-pulse"></div>
+                                    <div className="w-20 h-20 border-2 border-cyan-500 rounded-full flex items-center justify-center relative z-10 bg-black shadow-[0_0_30px_rgba(0,243,255,0.3)]">
+                                        <Send className="w-10 h-10 text-cyan-400" />
+                                    </div>
+                                    {/* Orbital rings */}
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 border border-cyan-500/30 rounded-full animate-[spin_4s_linear_infinite]"></div>
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 border-t border-b border-purple-500/30 rounded-full animate-[spin_5s_linear_infinite_reverse]"></div>
+                                </div>
+                                <div className="text-center space-y-2">
+                                    <h3 className="text-2xl font-black font-orbitron text-cyan-400 tracking-wider">
+                                        TRANSMISSION SECURED
+                                    </h3>
+                                    <p className="font-mono text-sm text-gray-400 max-w-xs mx-auto">
+                                        <span className="text-green-400">STATUS:</span> DATA PACKET DELIVERED TO MAINFRAME.
+                                    </p>
+                                </div>
+                                <button 
+                                    onClick={() => setIsSuccess(false)}
+                                    className="px-6 py-2 mt-4 bg-transparent border border-cyan-500/50 rounded text-cyan-400 font-mono text-xs tracking-widest hover:bg-cyan-950/30 hover:shadow-[0_0_15px_rgba(0,243,255,0.2)] hover:border-cyan-400 transition-all group"
+                                >
+                                    <span className="group-hover:text-white transition-colors">INITIATE NEW LINK</span>
+                                </button>
+                            </div>
+                        ) : (
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-1">
                                 <label className="text-xs font-mono text-gray-500 uppercase">Identity</label>
@@ -171,6 +200,7 @@ export default function ContactSection() {
                                 )}
                             </button>
                         </form>
+                        )}
                     </div>
                 </div>
             </div>
