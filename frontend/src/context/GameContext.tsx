@@ -35,30 +35,46 @@ const INITIAL_MISSIONS: Mission[] = [
     { id: 'theme_hacker', title: 'Neon Runner', description: "Switch to the 'Cyber' system theme.", xp: 20, completed: false },
 ];
 
+const DEFAULT_STATE: GameState = {
+    clearanceLevel: 1,
+    eggsFound: [],
+    maxLevel: 5,
+    missions: INITIAL_MISSIONS,
+    xp: 0,
+    isHackingMinigameActive: false,
+};
+
 export function GameProvider({ children }: { children: ReactNode }) {
-    const [state, setState] = useState<GameState>(() => {
-        if (typeof window !== 'undefined') {
+    const [state, setState] = useState<GameState>(DEFAULT_STATE);
+    const [hydrated, setHydrated] = useState(false);
+
+    // Hydrate from localStorage on client only (prevents SSR mismatch / React Error #418)
+    useEffect(() => {
+        try {
             const saved = localStorage.getItem('salvin_game_v4');
             if (saved) {
                 const parsed = JSON.parse(saved);
-                return { ...parsed, isHackingMinigameActive: false };
+                setState({
+                    clearanceLevel: parsed.clearanceLevel ?? DEFAULT_STATE.clearanceLevel,
+                    eggsFound: Array.isArray(parsed.eggsFound) ? parsed.eggsFound : [],
+                    maxLevel: parsed.maxLevel ?? DEFAULT_STATE.maxLevel,
+                    missions: Array.isArray(parsed.missions) ? parsed.missions : INITIAL_MISSIONS,
+                    xp: parsed.xp ?? DEFAULT_STATE.xp,
+                    isHackingMinigameActive: false,
+                });
             }
+        } catch {
+            // Corrupted localStorage — use defaults
         }
-        return {
-            clearanceLevel: 1,
-            eggsFound: [],
-            maxLevel: 5,
-            missions: INITIAL_MISSIONS,
-            xp: 0,
-            isHackingMinigameActive: false,
-        };
-    });
+        setHydrated(true);
+    }, []);
 
-    // Save to localStorage on change
+    // Save to localStorage on change (only after initial hydration)
     useEffect(() => {
+        if (!hydrated) return;
         const stateToSave = { ...state, isHackingMinigameActive: false }; 
         localStorage.setItem('salvin_game_v4', JSON.stringify(stateToSave));
-    }, [state]);
+    }, [state, hydrated]);
 
     const setHackingMinigameActive = useCallback((active: boolean) => {
         setState(prev => ({ ...prev, isHackingMinigameActive: active }));
